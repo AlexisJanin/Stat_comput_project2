@@ -1,0 +1,88 @@
+---
+title: "Project 1 working document for pipeline following the packages"
+output: html_notebook
+---
+
+```{r parameters that we can compare}
+K <- 13                             #Number of folds
+d <- 2                              #Degree
+h <- 3                            #Bandwidth
+N_sub <- 112                       #Number of points
+```
+
+
+```{r warning = FALSE}
+library(MASS)
+library(locpol)
+library(functClust)
+library(lpridge)
+data(mcycle)
+mcycle <- mcycle[mcycle$times <= 40, ]
+mcycle <- mcycle[sample(nrow(mcycle),N_sub), ]
+#plot(mcycle$times,mcycle$accel)
+
+set.seed(101)
+N <- nrow(mcycle)
+
+ind <- matrix(sample(1:N),ncol=K)   #dividing the sample
+
+```
+
+```{r}
+
+interpol <- function(time_in,time_pred,accel_pred,y){  #I don't understand how to compute                                                                  the function m(x)
+  
+l = length(time_in)  
+acc = 1:l
+accel_diff = 1:l
+  for (i in 1:l){
+  acc[i] = which.min(abs(time_pred-time_in[i]))
+  accel_diff[i] = abs(accel_pred[acc[i]]-y[i])/l
+  }
+return(sum(accel_diff))
+}
+
+
+error_locpol = 0
+for (k in 1:K){
+  y <- locpol(accel ~ times,mcycle[-ind[,k],],bw = h,deg = d,kernel = gaussK,xeval = (24:400)/10)  #Instead of this two lines i can simply take xeval = the points that i want! (but then care about the indices)
+  error_locpol = error_locpol + interpol(time_in = mcycle$times[ind[,k]],y = mcycle$accel[ind[,k]],accel_pred = y$lpFit$accel,time_pred = y$lpFit$times)
+    }
+    error_locpol = error_locpol/K
+    print(error_locpol)
+    
+y <- locpol(accel ~ times,mcycle,bw = h,deg = d,kernel = gaussK,xeval = (24:400)/10) 
+#plot(y)
+```
+
+```{r}
+error_loess = 0
+for (k in 1:K){
+  y_lo <- loess(accel~times, mcycle[-ind[,k],],degree = d,span = 0.35)  #Don't really understand how to compare h and span
+  error_loess = error_loess + sum(abs(predict(y_lo,mcycle$times[ind[,k]])-mcycle$accel[ind[,k]]),na.rm = TRUE)/k
+    }
+    error_loess = error_loess/K
+    print(error_loess)
+```
+```{r}
+y_lo <- loess(accel~times, mcycle,degree = d,span = 0.35)
+plot(mcycle$times,mcycle$accel)
+points(mcycle$times,predict(y_lo,mcycle$times))
+```
+
+```{r}
+error_lpepa = 0
+for (k in 1:K){
+  y_lpepa <- lpepa(mcycle$times[-ind[,k]],mcycle$accel[-ind[,k]],bandwidth = h,order = d,x.out = mcycle$times[ind[,k]])
+  error_lpepa = error_lpepa + sum(abs(y_lpepa$est-mcycle$accel[ind[,k]]),na.rm = TRUE)/k
+    }
+    error_lpepa = error_lpepa/K #Way to high recheck the computation of error
+    print(error_lpepa)
+```
+
+
+
+
+
+
+
