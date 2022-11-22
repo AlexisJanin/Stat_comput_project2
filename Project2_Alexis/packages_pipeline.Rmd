@@ -16,6 +16,7 @@ library(MASS)
 library(locpol)
 library(functClust)
 library(lpridge)
+library(lokern)
 data(mcycle)
 mcycle <- mcycle[mcycle$times <= 40, ]
 mcycle <- mcycle[sample(nrow(mcycle),N_sub), ]
@@ -72,13 +73,47 @@ points(mcycle$times,predict(y_lo,mcycle$times))
 
 ```{r}
 error_lpepa = 0
+mcycle <- mcycle[order(mcycle$times),]  #Ordering the data set, this is not an issue since the indices are still random
 for (k in 1:K){
   y_lpepa <- lpepa(mcycle$times[-ind[,k]],mcycle$accel[-ind[,k]],bandwidth = h,order = d,x.out = mcycle$times[ind[,k]])
-  error_lpepa = error_lpepa + sum(abs(y_lpepa$est-mcycle$accel[ind[,k]]),na.rm = TRUE)/k
+  #x_out_not_ordered = mcycle$times[ind[,k]]
+  #print(mcycle$times[ind[,k]])
+  error_lpepa = error_lpepa + sum(abs(y_lpepa$est-mcycle$accel[sort(ind[,k])]),na.rm = TRUE)/k
     }
     error_lpepa = error_lpepa/K #Way to high recheck the computation of error
     print(error_lpepa)
+    
+
+y_lpepa <- lpepa(mcycle$times,mcycle$accel,bandwidth = h,order = d,x.out = mcycle$times)
+plot(y_lpepa$x.out,y_lpepa$est)
+points(mcycle$times,mcycle$accel,col = "red")
 ```
+
+```{r}
+error_lokerns = 0
+mcycle <- mcycle[order(mcycle$times),]  #Ordering the data set, this is not an issue since the indices are still random
+for (k in 1:K){
+  y_lokerns <- lokerns(mcycle$times[-ind[,k]],mcycle$accel[-ind[,k]],bandwidth = ((1:length(mcycle$accel[ind[,k]]))*0)+h,korder = d,x.out = mcycle$times[ind[,k]])
+  #x_out_not_ordered = mcycle$times[ind[,k]]
+  #print(mcycle$times[ind[,k]])
+  error_lokerns = error_lokerns + sum(abs(y_lokerns$est-mcycle$accel[sort(ind[,k])]),na.rm = TRUE)/k
+    }
+    error_lokerns = error_lokerns/K #Way to high recheck the computation of error
+    print(error_lokerns)
+    
+
+y_lokerns <- lokerns(mcycle$times,mcycle$accel,bandwidth = ((1:length(mcycle$accel))*0)+h,korder = d,x.out = mcycle$times)
+plot(y_lokerns$x.out,y_lokerns$est)
+points(mcycle$times,mcycle$accel,col = "red")
+```
+
+
+
+
+
+
+
+
 
 
 
