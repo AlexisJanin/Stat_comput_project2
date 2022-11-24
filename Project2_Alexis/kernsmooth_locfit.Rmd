@@ -1,0 +1,79 @@
+---
+title: "Project 1 working document for pipeline following the packages"
+output: html_notebook
+---
+
+```{r parameters that we can compare}
+K <- 13                             #Number of folds
+d <- 2                              #Degree
+h <- 3                            #Bandwidth
+N_sub <- 112                       #Number of points
+```
+
+
+```{r warning = FALSE}
+library(MASS)
+library(locpol)
+library(functClust)
+library(lpridge)
+library(lokern)
+library(KernSmooth)
+
+data(mcycle)
+mcycle <- mcycle[mcycle$times <= 40, ]
+mcycle <- mcycle[sample(nrow(mcycle),N_sub), ]
+#plot(mcycle$times,mcycle$accel)
+
+set.seed(101)
+N <- nrow(mcycle)
+
+ind <- matrix(sample(1:N),ncol=K)   #dividing the sample
+
+```
+
+```{r}
+# install.packages('KernSmooth')
+library(KernSmooth)
+
+errorkern = 0
+for (k in 1:K){
+  lp <- locpoly(x = mcycle$times[-ind[,k]],y = mcycle$accel[-ind[,k]], bandwidth=h, degree=2)
+  l <- length(mcycle$times[ind[,k]])
+  cverror <- 0
+  for (i in 1:l){
+    gg <- mcycle$times[ind[,k]][i]
+    preds <- lp$y[which.min(abs(lp$x - gg))] 
+    cverror <- cverror + abs(gg- preds)/k
+  }
+  errorkern <- errorkern + cverror
+}
+errorkern/K
+```
+
+```{r}
+# install.packages('locfit')
+library(locfit)
+errorlocfit <- 0
+for (k in 1:K){
+  lf <- locfit(accel~times, data=mcycle[-ind[,k],], deg=d)
+  preds <- predict(lf, newdata=mcycle[ind[,k],], se.fit=TRUE)$fit
+  errorlocfit <- errorlocfit + sum(abs(mcycle$accel[ind[,k]] - preds))/k
+}
+errorlocfit/K
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
