@@ -55,6 +55,37 @@ plot(x,log_sin(x))
 ```
 
 
+```{r Noise induction}
+Noise_induction <- function(X,type = 'gauss',uniform = TRUE,sig_gauss = 1, mu_gauss = 0,r_unif = 0.25){
+  #Type (='gauss') : Type of the noise considered: 'gauss'(default); 'unif'
+  #Uniform (=TRUE) : False if the noise is growing (in variance) along with X-axis growing
+  #sig_gauss, mu_gauss (=(0,1)): in case of gaussian noise
+  #r_unif (=0.25): range of uniform noise in case of type='unif' : [-r_unif,r_unif]
+  
+  if(type=='gauss'){
+    if(uniform){
+      n <- rnorm(length(X),mu_gauss,sig_gauss)
+      return(X+n)
+    }
+    #if uniform = False fill
+  }
+  
+  if(type=='unif'){
+    if(uniform){
+      n <- runif(length(X),min = -r_unif,max = r_unif)
+      return(X+n)
+    }
+    #if uniform = False fill
+  }
+    
+  return(X)
+}
+
+
+```
+
+
+
 
 ```{r locpol}
 #Clear degree, clear bandwidth and clear kernel.
@@ -154,7 +185,7 @@ lines(mcycle$times,preds)
 ```
 
 ```{r}
-#Clear degree, clear bandwidth and UNclear/no kernel.
+#Clear degree, clear bandwidth and clear kernel.
 errorkern = 0
 for (k in 1:K){
   lp <- locpoly(x = mcycle$times[-ind[,k]],y = mcycle$accel[-ind[,k]], bandwidth=h, degree=2)

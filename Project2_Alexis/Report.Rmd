@@ -1,0 +1,21 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Introduction
+
+## Packages considered
+
+For this local regression packages comparison, we had to find as mcu hpackages as possible about it.
+We found __locpol__ function from __locpol__ package, __locfit__ from __locfit__ ( _need to check the behaviour of h_ ) and __locpoly__ from __KernSmooth__. We found other packages such as lpridge(lpepa), stats(loess/lowess), lokern(lokerns) but they missed some important features in order to be well compared with everything. As example lpepa stands for lp_epachnenikov and then is not using gaussian kernel; loess has no bandwidth argument but rather a span one which has a totally different way of working.
+
+## Parameters considered
+
+We first wanted to compare the methods for the same bandwidth and kernel (gaussian) to see if indeed the results were the same, without regards of smoothness of the function. \
+We then looked for consistency of each methods, looking if indeed the error was decreasing to zero with an increasing number of point, depending on the noise induced.
+
+## Functions/space(interval) considered
+
+
+
