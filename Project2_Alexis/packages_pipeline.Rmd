@@ -3,20 +3,27 @@ title: "Project 1 working document for pipeline following the packages"
 output: html_notebook
 ---
 
-```{r parameters that we can compare}
-K <- 13                             #Number of folds
-d <- 2                              #Degree
-h <- 3                            #Bandwidth
-N_sub <- 112                       #Number of points
-```
-
-
-```{r warning = FALSE}
+```{r packages}
 library(MASS)
 library(locpol)
 library(functClust)
 library(lpridge)
 library(lokern)
+library(KernSmooth)
+library(locfit)
+```
+
+
+```{r parameters that we can compare}
+K <- 13                             #Number of folds
+d <- 2                              #Degree
+h <- 3                              #Bandwidth
+N_sub <- 112                        #Number of points
+```
+
+
+```{r data import and K strat definition,warning = FALSE}
+
 data(mcycle)
 mcycle <- mcycle[mcycle$times <= 40, ]
 mcycle <- mcycle[sample(nrow(mcycle),N_sub), ]
@@ -29,10 +36,29 @@ ind <- matrix(sample(1:N),ncol=K)   #dividing the sample
 
 ```
 
-```{r}
+```{r not so smooth function definition that we will try to approximate}
+dmixnorm <- function(x, mu1 = 0, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7){   #Rather very smooth
+  y <- (1-tau)*dnorm(x,mu1,sigma1) + tau*dnorm(x,mu2,sigma2)
+  return(y)
+}
 
+log_sin <- function(x,a = 5, b = 1.05){  #Not smooth at all  the smaller a is, the smoother it is
+  if(b<1){print('b>1 or error!!')
+    break}
+  return(log(sin(a*x)+b))
+}
+
+x = 0:1000/100
+plot(x,log_sin(x))
+
+
+```
+
+
+
+```{r locpol}
+#Clear degree, clear bandwidth and clear kernel.
 interpol <- function(time_in,time_pred,accel_pred,y){  #I don't understand how to compute                                                                  the function m(x)
-  
 l = length(time_in)  
 acc = 1:l
 accel_diff = 1:l
@@ -56,7 +82,8 @@ y <- locpol(accel ~ times,mcycle,bw = h,deg = d,kernel = gaussK,xeval = (24:400)
 #plot(y)
 ```
 
-```{r}
+```{r loess}
+#Clear degree, unclear bandwidth and no kernel.
 error_loess = 0
 for (k in 1:K){
   y_lo <- loess(accel~times, mcycle[-ind[,k],],degree = d,span = 0.35)  #Don't really understand how to compare h and span
@@ -64,14 +91,15 @@ for (k in 1:K){
     }
     error_loess = error_loess/K
     print(error_loess)
-```
-```{r}
+    
+    
 y_lo <- loess(accel~times, mcycle,degree = d,span = 0.35)
 plot(mcycle$times,mcycle$accel)
 points(mcycle$times,predict(y_lo,mcycle$times))
 ```
 
 ```{r}
+#Clear degree, clear bandwidth and clear kernel but only Epa.
 error_lpepa = 0
 mcycle <- mcycle[order(mcycle$times),]  #Ordering the data set, this is not an issue since the indices are still random
 for (k in 1:K){
@@ -90,6 +118,7 @@ points(mcycle$times,mcycle$accel,col = "red")
 ```
 
 ```{r}
+#Clear degree, clear bandwidth and UNclear kernel.
 error_lokerns = 0
 mcycle <- mcycle[order(mcycle$times),]  #Ordering the data set, this is not an issue since the indices are still random
 for (k in 1:K){
@@ -107,7 +136,44 @@ plot(y_lokerns$x.out,y_lokerns$est)
 points(mcycle$times,mcycle$accel,col = "red")
 ```
 
+```{r}
+#Clear degree, UNclear bandwidth and clear kernel.
+errorlocfit <- 0
+for (k in 1:K){
+  lf <- locfit(accel~lp(times,h=h), data=mcycle[-ind[,k],], deg=d,kern = "gauss")
+  preds <- predict(lf, newdata=mcycle[ind[,k],], se.fit=TRUE)$fit
+  errorlocfit <- errorlocfit + sum(abs(mcycle$accel[ind[,k]] - preds))/k
+}
+errorlocfit/K
 
+lf <- locfit(accel~lp(times,h=h), data=mcycle, deg=d,kern = "gauss")
+preds <- predict(lf, newdata=mcycle, se.fit=TRUE)$fit
+plot(mcycle$times,mcycle$accel,col = "red")
+lines(mcycle$times,preds)
+
+```
+
+```{r}
+#Clear degree, clear bandwidth and UNclear/no kernel.
+errorkern = 0
+for (k in 1:K){
+  lp <- locpoly(x = mcycle$times[-ind[,k]],y = mcycle$accel[-ind[,k]], bandwidth=h, degree=2)
+  l <- length(mcycle$times[ind[,k]])
+  cverror <- 0
+  for (i in 1:l){
+    gg <- mcycle$times[ind[,k]][i]
+    preds <- lp$y[which.min(abs(lp$x - gg))] 
+    cverror <- cverror + abs(gg- preds)/k
+  }
+  errorkern <- errorkern + cverror
+}
+errorkern/K
+
+y_locpoly <- locpoly(x = mcycle$times,y = mcycle$accel, bandwidth=h, degree=2)
+
+plot(mcycle$times,mcycle$accel,col = "red")
+lines(y_locpoly)
+```
 
 
 
