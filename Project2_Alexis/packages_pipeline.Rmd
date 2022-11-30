@@ -11,6 +11,7 @@ library(lpridge)
 library(lokern)
 library(KernSmooth)
 library(locfit)
+library(stats)
 ```
 
 
@@ -168,16 +169,16 @@ points(mcycle$times,mcycle$accel,col = "red")
 ```
 
 ```{r}
-#Clear degree, UNclear bandwidth and clear kernel.
+#Clear degree, unclear bandwidth and clear kernel.
 errorlocfit <- 0
 for (k in 1:K){
-  lf <- locfit(accel~lp(times,h=h), data=mcycle[-ind[,k],], deg=d,kern = "gauss")
+  lf <- locfit(accel~lp(times,h=h*2), data=mcycle[-ind[,k],], deg=d,kern = "gauss")
   preds <- predict(lf, newdata=mcycle[ind[,k],], se.fit=TRUE)$fit
   errorlocfit <- errorlocfit + sum(abs(mcycle$accel[ind[,k]] - preds))/k
 }
 errorlocfit/K
 
-lf <- locfit(accel~lp(times,h=h), data=mcycle, deg=d,kern = "gauss")
+lf <- locfit(accel~lp(times,h=h*2), data=mcycle, deg=d,kern = "gauss")  #it seems like since h is the halfradius,
 preds <- predict(lf, newdata=mcycle, se.fit=TRUE)$fit
 plot(mcycle$times,mcycle$accel,col = "red")
 lines(mcycle$times,preds)
@@ -205,6 +206,25 @@ y_locpoly <- locpoly(x = mcycle$times,y = mcycle$accel, bandwidth=h, degree=2)
 plot(mcycle$times,mcycle$accel,col = "red")
 lines(y_locpoly)
 ```
+
+
+```{r}
+#Clear degree, clear bandwidth and clear kernel.
+errorksmooth = 0
+for (k in 1:K){
+  lp <- ksmooth(x = mcycle$times[-ind[,k]],y = mcycle$accel[-ind[,k]], bandwidth=h, kernel = "normal", x.points = mcycle$times[ind[,k]])
+  l <- length(mcycle$times[ind[,k]])
+  cverror <- sum(abs(lp$y-mcycle$accel[ind[,k]]))/k
+  errorksmooth <- errorksmooth + cverror
+}
+errorksmooth/K
+
+y_ksmooth <- ksmooth(x = mcycle$times,y = mcycle$accel, bandwidth=h, kernel = "normal",x.points = mcycle$times)
+
+plot(mcycle$times,mcycle$accel,col = "red")
+lines(y_ksmooth$x,y_ksmooth$y)
+```
+
 
 
 
