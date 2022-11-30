@@ -37,9 +37,9 @@ t <- c(0,0,0)
 i <- 1
 for (n in df_results$Samples_sizes){
   set.seed(1)
-  X <- 0:n/(n/5)  #To go from 0 to 5
-  Y <- dmixnorm(X,mu1 = 4)
-  Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)
+  X <- 0:n/(n/5)                      #To go from 0 to 5
+  Y <- dmixnorm(X,mu1 = 4)            #Simply change de the function for the one wanted
+  Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
   
   t[1] <- Sys.time()
   y_locpol <- locpol(Y_noisy~X,data.frame(X,Y_noisy),bw = h,deg = d,kernel = gaussK,xeval = X)  #xeval has to be < 5000....
