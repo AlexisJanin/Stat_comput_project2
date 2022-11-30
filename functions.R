@@ -1,4 +1,4 @@
-
+# Ctrl+f : TODO to see what's left to do here
 
 piece_linear <- function(x, c1, c2, c3){
   #c1 are the thresholds, c2 are the coefficients, c3 are the added terms
@@ -42,3 +42,40 @@ log_sin <- function(x,a = 5, b = 1.05){
     break}
   return(log(sin(a*x)+b))
 }
+
+################################################################################
+##############################NOISE FUNCTIONS###################################
+
+Noise_induction <- function(Y,type = 'gauss',uniform = TRUE,sig_gauss = 1, mu_gauss = 0,r_unif = 0.25){
+  #Add noise to Y: return a noisy Y
+  
+  #type (default='gauss') : Type of the noise considered: 'gauss'; see below for params
+  #type = 'unif' : Uniform noise, see below for params
+  #Uniform (=TRUE) : False if the noise is growing (in variance) along with X-axis growing
+  #sig_gauss, mu_gauss (=(0,1)): in case of gaussian noise
+  #r_unif (=0.25): range of uniform noise in case of type='unif' : [-r_unif,r_unif]
+  
+  if(!uniform){
+    stop("TODO implement non uniform noise")
+  }
+  
+  if(type=='gauss'){
+    if(uniform){
+      n <- rnorm(length(X),mu_gauss,sig_gauss)
+      return(Y+n)
+    }
+    #if uniform = False fill
+  }
+  
+  if(type=='unif'){
+    if(uniform){
+      n <- runif(length(X),min = -r_unif,max = r_unif)
+      return(Y+n)
+    }
+    #if uniform = False fill
+  }
+  
+  return(Y)
+}
+
+

@@ -111,7 +111,7 @@ for (k in 1:K){
     print(error_locpol)
     
 y <- locpol(accel ~ times,mcycle,bw = h,deg = d,kernel = gaussK,xeval = (24:400)/10) 
-#plot(y)
+plot(y)
 ```
 
 ```{r loess}
@@ -201,7 +201,7 @@ for (k in 1:K){
 }
 errorkern/K
 
-y_locpoly <- locpoly(x = mcycle$times,y = mcycle$accel, bandwidth=h, degree=2)
+y_locpoly <- locpoly(x = mcycle$times,y = mcycle$accel, bandwidth=h, degree=2,gridsize = N_sub)
 
 plot(mcycle$times,mcycle$accel,col = "red")
 lines(y_locpoly)
