@@ -1,0 +1,196 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r packages}
+library(MASS)
+library(locpol)
+library(functClust)
+library(lpridge)
+library(lokern)
+library(KernSmooth)
+library(locfit)
+library(stats)
+
+# Ctrl+f : TODO to see what's left to do here
+
+piece_linear <- function(x, c1, c2, c3){
+  #c1 are the thresholds, c2 are the coefficients, c3 are the added terms
+  y <- rep(0, length(x))
+  
+  for (i in seq(1, length(c1) +1)){
+    if (i==1){y[x < c1[i]] = c2[i]*(x[x<c1[i]]) + c3[i]}
+    else if (i == length(c1)+1){y[x >= c1[i-1]] = c2[i]*(x[x>=c1[i-1]]) + c3[i]}
+    else{y[(x < c1[i]) & (x>=c1[i-1])] = c2[i]*(x[(x < c1[i]) & (x>=c1[i-1])]) + c3[i]}
+  }
+  return(y)
+}
+
+sinx_1 <- function(x, a=1){
+  #smaller a means a smoother arround 0 (won't ever be smooth arround 0)
+  y <- sin(a/x)*(sqrt(x))
+  return(y)
+}
+
+weiertrass <- function(x, a=0.9, b=9){
+  #continous everywhere but no where differentiable. The higher b is, the less smooth the function is
+  y <- rep(0, length(x))
+  for (i in seq(0, 200)){
+    y = y + (a^i)*cos(pi*x*(b^i))
+  }
+  return(y)
+}
+
+dmixnorm <- function(x, mu1 = 0, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7){   
+  #Argument are self explanatory : tau*N(mu1,sigma1)+(1-tau)*N(mu2,sigma2)
+  #Rather very smooth function
+  y <- tau*dnorm(x,mu1,sigma1) + (1-tau)*dnorm(x,mu2,sigma2)
+  return(y)
+}
+
+log_sin <- function(x,a = 5, b = 1.05){  
+  #Not smooth at all  the smaller a is, the smoother it is
+  #b HAS to be bigger than 1, to have the log of something always positive.
+  #Lower b and higher a means less smooth function
+  if(b<1){print('b>1 or error!!')
+    break}
+  return(log(sin(a*x)+b))
+}
+
+################################################################################
+##############################NOISE FUNCTIONS###################################
+
+Noise_induction <- function(Y,type = 'gauss',uniform = TRUE,sig_gauss = 1, mu_gauss = 0,r_unif = 0.25){
+  #Add noise to Y: return a noisy Y
+  
+  #type (default='gauss') : Type of the noise considered: 'gauss'; see below for params
+  #type = 'unif' : Uniform noise, see below for params
+  #Uniform (=TRUE) : False if the noise is growing (in variance) along with X-axis growing
+  #sig_gauss, mu_gauss (=(0,1)): in case of gaussian noise
+  #r_unif (=0.25): range of uniform noise in case of type='unif' : [-r_unif,r_unif]
+  
+  if(!uniform){
+    stop("TODO implement non uniform noise")
+  }
+  
+  if(type=='gauss'){
+    if(uniform){
+      n <- rnorm(length(X),mu_gauss,sig_gauss)
+      return(Y+n)
+    }
+    #if uniform = False fill
+  }
+  
+  if(type=='unif'){
+    if(uniform){
+      n <- runif(length(X),min = -r_unif,max = r_unif)
+      return(Y+n)
+    }
+    #if uniform = False fill
+  }
+  
+  return(Y)
+}
+```
+
+```{r parameters that we can compare}
+K <- 10                             #Number of folds
+d <- 2                              #Degree
+h <- 0.5                            #Bandwidth
+N <- 1000                        #Sizes of sample
+ind <- matrix(sample(1:N),ncol=K)
+
+Samples_sizes <- c(100, 500, 1000); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
+err_locpol <- 1:s*0
+err_locfit <- 1:s*0
+err_locpoly <- 1:s*0
+err_ksmooth <- 1:s*0
+
+df_results <- data.frame(Samples_sizes,err_locpol,err_locfit,err_locpoly, err_ksmooth) #Dataframe to fill
+
+#ind <- matrix(sample(1:N),ncol=K)   #Pipeline for dividing the sample
+```
+
+```{r support functions}
+interpol <- function(time_in,time_pred,accel_pred,y){  #I don't understand how to compute                                                                  the function m(x)
+l = length(time_in)  
+acc = 1:l
+accel_diff = 1:l
+  for (i in 1:l){
+  acc[i] = which.min(abs(time_pred-time_in[i]))
+  accel_diff[i] = abs(accel_pred[acc[i]]-y[i])/l
+  }
+return(sum(accel_diff))
+}
+```
+
+```{r CV error comparison}
+err <- c(0, 0, 0, 0)
+
+i <- 1
+for (n in df_results$Samples_sizes){
+  set.seed(1)
+  X <- 0:n/(n/5)                      #To go from 0 to 5
+  Y <- dmixnorm(X,mu1 = 4)            #Simply change de the function for the one wanted
+  Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
+  df <- data.frame(X,Y_noisy)
+  
+  ind <- matrix(sample(1:n),ncol=K)
+  
+  error_locpol = 0
+  for (k in 1:K){
+    y_locpol <- locpol(Y_noisy~X, df[-ind[,k],] ,bw = h,deg = d,kernel = gaussK,xeval = X)  
+    error_locpol = error_locpol + interpol(time_in = df$X[ind[,k]],y = df$Y_noisy[ind[,k]],accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
+  }
+  error_locpol = error_locpol/K
+  err[1] = error_locpol
+  
+  errorkern = 0
+  for (k in 1:K){
+    lp <- locpoly(x =X[-ind[,k]],y = Y_noisy[-ind[,k]], bandwidth=h, degree=d)
+    l <- length(X[ind[,k]])
+    cverror <- 0
+    for (i in 1:l){
+      gg <- X[ind[,k]][i]
+      preds <- lp$y[which.min(abs(lp$x - gg))] 
+      cverror <- cverror + abs(gg- preds)/k
+    }
+    errorkern <- errorkern + cverror
+  }
+  err[2] <- errorkern/K
+  
+  errorlocfit <- 0
+  for (k in 1:K){
+    lf <- locfit(Y_noisy~lp(X,h=h*2), data=df[-ind[,k],], deg=d, kern = "gauss")
+    preds <- predict(lf, newdata=df[ind[,k],], se.fit=TRUE)$fit
+    errorlocfit <- errorlocfit + sum(abs(df$Y_noisy[ind[,k]] - preds))/k
+  }
+  err[3] <- errorlocfit/K
+  
+  errorksmooth = 0
+  for (k in 1:K){
+    lp <- ksmooth(x = X[-ind[,k]],y = Y_noisy[-ind[,k]], bandwidth=h, kernel = "normal", x.points = X[ind[,k]])
+    cverror <- sum(abs(lp$y-Y_noisy[ind[,k]]))/k
+    errorksmooth <- errorksmooth + cverror
+  }
+  errorksmooth/K
+  
+  df_results[i,-1] <- err
+  print(i)
+  i <- i+1
+  
+  
+  
+}
+```
+```{r}
+#Plotting locpol 
+#lines(y_locpol[["lpFit"]][["X"]],y_locpol[["lpFit"]][["Y_noisy"]],col = "red")
+```
+
+
+
+
+
+
