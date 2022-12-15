@@ -1,0 +1,142 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r packages}
+library(MASS)
+library(locpol)
+library(functClust)
+library(lpridge)
+library(lokern)
+library(KernSmooth)
+library(locfit)
+library(stats)
+source("functions.R")
+```
+
+```{r support functions}
+interpol <- function(time_in,time_pred,accel_pred,y){  #I don't understand how to compute                                                                  the function m(x)
+l = length(time_in)  
+acc = 1:l
+accel_diff = 1:l
+  for (i in 1:l){
+  acc[i] = which.min(abs(time_pred-time_in[i]))
+  accel_diff[i] = abs(accel_pred[acc[i]]-y[i])/l
+  }
+return(sum(accel_diff))
+}
+```
+
+```{r parameters that we can compare}
+K <- 10                             #Number of folds
+d <- 2                              #Degree(s)
+h <- 0.5                            #Bandwidth(s)
+N_xeval <- 1000                           #Sizes of sample
+
+Samples_sizes <- 10^(1:3); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
+time_locpol <- 1:s*0
+time_locfit <- 1:s*0
+time_locpoly <- 1:s*0
+time_ksmooth <- 1:s*0
+
+n_method = 3
+n_trials = 1
+nb_functions = 1
+
+nrow = s*n_method*n_trials*length(h)*length(d)*nb_functions
+df_results <- data.frame(matrix(nrow = nrow,ncol = 8))
+colnames(df_results) <- c("Indice","Degree","Bandwidth","Number_of_input_points","Method","Function","Time","Error") #Dataframe to fill
+df_results$Indice <- 1:nrow
+
+#ind <- matrix(sample(1:N),ncol=K)   #Pipeline for dividing the sample
+```
+
+```{r MAIN function}
+err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, fct, method = "locpol"){
+  time = 0
+  error = 0
+  if (method=="locpol"){
+      time <- Sys.time()
+      y_locpol <- locpol(Y_noisy~X,data.frame(X,Y_noisy),bw = bandwidth,deg = degree,kernel = gaussK,xeval = X_eval) 
+      time <- Sys.time()-time
+      #TODO
+      error <- interpol(time_in = X_eval,y = Y_eval,accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
+  }
+  if (method=="locpoly"){
+    #TODO
+    time <- Sys.time()
+    lp <- locpoly(x =X,y = Y_noisy, bandwidth=bandwidth, degree=degree)
+    time <- Sys.time()-time
+    l <- length(X_eval)
+    cverror <- 0
+    for (i in 1:l){
+      gg <- X_eval[i]
+      preds <- lp$y[which.min(abs(lp$x - gg))] 
+      cverror <- cverror + abs(Y_eval[i]- preds)
+    }
+    error <- cverror
+  }
+  if (method=="locfit"){
+    #TODO
+    time <- Sys.time()
+    lf <- locfit(Y_noisy~lp(X,h=bandwidth*2), data.frame(X,Y_noisy), deg=degree, kern = "gauss")
+    time <- Sys.time()-time
+    my_data <- data.frame(X_eval, Y_eval)
+    names(my_data)[1] <- "X"
+    names(my_data)[2] <- "Y_noisy"
+    preds <- predict(lf, newdata=my_data, se.fit=TRUE)$fit
+    error <- error + sum(abs(Y_eval - preds))
+  }
+  
+  return(c(time,error))
+}
+
+
+```
+
+
+
+
+```{r Time comparison}
+t <- c(0,0,0)
+i <- 1
+for (n in df_results$Samples_sizes){
+  set.seed(1)
+  X <- 0:n/(n/5)                      #To go from 0 to 5
+  X_eval = 0:N_xeval/(N_xeval/5)            #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter                                        much!
+  Y <- dmixnorm(X,mu1 = 4)            #Simply change de the function for the one wanted
+  Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
+  
+  t[1] <- Sys.time()
+  y_locpol <- locpol(Y_noisy~X,data.frame(X,Y_noisy),bw = h,deg = d,kernel = gaussK,xeval = X_eval)  #xeval has to be < 5000....
+  t[1] <- Sys.time()-t[1]
+  
+  t[2] <- Sys.time()
+  y_locpoly <- locpoly(X,Y_noisy, bandwidth=h, degree=d,gridsize = N_xeval) 
+  t[2] <- Sys.time()-t[2]
+  
+  t[3] <- Sys.time()
+  y_locfit <- locfit(X~lp(Y_noisy,h=h/2,deg=d),data.frame(X,Y_noisy), kern = 'gauss') #TODO: check if bandwidth has indeed to be treated like that
+  t[3] <- Sys.time()-t[3]
+  
+  #t[4] <- Sys.time()  
+  #y_ksmooth <- ksmooth(X,Y_noisy, bandwidth=h, kernel = "normal",X) #NO DEGREE
+  #t[4] <- Sys.time() - t[4]
+  
+  df_results[i,-1] <- t
+  print(i)
+  i <- i+1
+  
+}
+```
+```{r}
+#Plotting locpol 
+#lines(y_locpol[["lpFit"]][["X"]],y_locpol[["lpFit"]][["Y_noisy"]],col = "red")
+```
+
+
+
+
+
+
