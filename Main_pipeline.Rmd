@@ -30,8 +30,8 @@ return(sum(accel_diff))
 
 ```{r parameters that we can compare}
 K <- 10                             #Number of folds
-d <- 2                              #Degree(s)
-h <- 0.5                            #Bandwidth(s)
+degrees <- 1:3; len_d <- length(degrees)                              #Degree(s)
+h_ <- 1:5; len_h <- length(h_)                            #Bandwidth(s)
 N_xeval <- 1000                           #Sizes of sample
 
 Samples_sizes <- 10^(1:3); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
@@ -44,7 +44,7 @@ n_method = 3
 n_trials = 1
 nb_functions = 1
 
-nrow = s*n_method*n_trials*length(h)*length(d)*nb_functions
+nrow = s*n_method*n_trials*len_h*len_d*nb_functions
 df_results <- data.frame(matrix(nrow = nrow,ncol = 8))
 colnames(df_results) <- c("Indice","Degree","Bandwidth","Number_of_input_points","Method","Function","Time","Error") #Dataframe to fill
 df_results$Indice <- 1:nrow
@@ -53,34 +53,36 @@ df_results$Indice <- 1:nrow
 ```
 
 ```{r MAIN function}
-err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, fct, method = "locpol"){
+err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, method = "locpol", fct = NaN){
+  #Degree(=1), bandwidth(=1) (automatically modified for method different than locpol) self explicit
+  #X, Y_noisy the point used to approximate
+  #X_eval, Y_eval where we want to compare the results
+  #method(="locpol"): str argument for the method used. Implemented: "locpol";"locpoly","locfit"
+  #fct(=NaN): not used atm
   time = 0
   error = 0
   if (method=="locpol"){
+      df <- data.frame(X,Y_noisy) #preallocate to avoid loosing any time doing this in the function
       time <- Sys.time()
-      y_locpol <- locpol(Y_noisy~X,data.frame(X,Y_noisy),bw = bandwidth,deg = degree,kernel = gaussK,xeval = X_eval) 
+      y_locpol <- locpol(Y_noisy~X,df,bw = bandwidth,deg = degree,kernel = gaussK,xeval = X_eval) 
       time <- Sys.time()-time
-      #TODO
       error <- interpol(time_in = X_eval,y = Y_eval,accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
   }
   if (method=="locpoly"){
-    #TODO
     time <- Sys.time()
     lp <- locpoly(x =X,y = Y_noisy, bandwidth=bandwidth, degree=degree)
     time <- Sys.time()-time
     l <- length(X_eval)
-    cverror <- 0
     for (i in 1:l){
       gg <- X_eval[i]
-      preds <- lp$y[which.min(abs(lp$x - gg))] 
-      cverror <- cverror + abs(Y_eval[i]- preds)
+      preds <- lp$y[which.min(abs(lp$x - gg))] #Are we sure that the grid is enough refined ?
+      error <- error + abs(Y_eval[i]- preds)
     }
-    error <- cverror
   }
   if (method=="locfit"){
-    #TODO
+    df <- data.frame(X,Y_noisy) #preallocate to avoid loosing any time doing this in the function
     time <- Sys.time()
-    lf <- locfit(Y_noisy~lp(X,h=bandwidth*2), data.frame(X,Y_noisy), deg=degree, kern = "gauss")
+    lf <- locfit(Y_noisy~lp(X,h=bandwidth*2), df, deg=degree, kern = "gauss")
     time <- Sys.time()-time
     my_data <- data.frame(X_eval, Y_eval)
     names(my_data)[1] <- "X"
@@ -93,6 +95,26 @@ err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, f
 }
 
 
+```
+
+```{r}
+i=1
+set.seed(1)
+for (d in degrees){
+  for (h in h_){
+    for (n in Samples_sizes){
+      X <- 0:n/(n/5)                      #To go from 0 to 5
+      X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter                                        much!
+      Y <- dmixnorm(X,mu1 = 4, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7)            #Simply change de the function for the one wanted
+      Y_eval <- dmixnorm(X_eval,mu1 = 4, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7)
+      Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
+      t_e_locpol <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval)
+      df_results[i,c(2:4,7:8)] <- c(d,h,n,t_e_locpol[1],t_e_locpol[2])
+      df_results[i,5:6] <- c("locpol","dmixnorm")
+      i<-i+1
+    }
+  }
+}
 ```
 
 
