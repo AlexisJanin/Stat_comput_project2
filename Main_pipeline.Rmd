@@ -29,16 +29,12 @@ return(sum(accel_diff))
 ```
 
 ```{r parameters that we can compare}
-K <- 10                             #Number of folds
-degrees <- 1:3; len_d <- length(degrees)                              #Degree(s)
-h_ <- 1:5; len_h <- length(h_)                            #Bandwidth(s)
+K <- 10                             #Number of folds - useless atm
+degrees <- 1:5; len_d <- length(degrees)                              #Degree(s)
+h_ <- (2:10)/10; len_h <- length(h_)                            #Bandwidth(s)
 N_xeval <- 1000                           #Sizes of sample
 
-Samples_sizes <- 10^(1:3); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
-time_locpol <- 1:s*0
-time_locfit <- 1:s*0
-time_locpoly <- 1:s*0
-time_ksmooth <- 1:s*0
+Samples_sizes <- c(100,1000,4000); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
 
 n_method = 3
 n_trials = 1
@@ -66,29 +62,26 @@ err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, m
       time <- Sys.time()
       y_locpol <- locpol(Y_noisy~X,df,bw = bandwidth,deg = degree,kernel = gaussK,xeval = X_eval) 
       time <- Sys.time()-time
-      error <- interpol(time_in = X_eval,y = Y_eval,accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
+      
+      error <- sum((Y_eval-y_locpol$lpFit$Y_noisy)^2)#/length(X_eval) WARNING NEED LENGTH(X_EVAL) CONSTANT
+      #error <- interpol(time_in = X_eval,y = Y_eval,accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
   }
   if (method=="locpoly"){
     time <- Sys.time()
-    lp <- locpoly(x =X,y = Y_noisy, bandwidth=bandwidth, degree=degree)
+    lp <- locpoly(x = X, y = Y_noisy, bandwidth=bandwidth, degree=degree, gridsize = length(X_eval))
     time <- Sys.time()-time
-    l <- length(X_eval)
-    for (i in 1:l){
-      gg <- X_eval[i]
-      preds <- lp$y[which.min(abs(lp$x - gg))] #Are we sure that the grid is enough refined ?
-      error <- error + abs(Y_eval[i]- preds)
-    }
+    error <- sum((lp$y-Y_eval)^2)#/length(X_eval) WARNING NEED LENGTH(X_EVAL) CONSTANT
   }
   if (method=="locfit"){
     df <- data.frame(X,Y_noisy) #preallocate to avoid loosing any time doing this in the function
     time <- Sys.time()
-    lf <- locfit(Y_noisy~lp(X,h=bandwidth*2), df, deg=degree, kern = "gauss")
+    lf <- locfit(Y_noisy~lp(X,h=bandwidth*2/5, deg=degree), df, kern = "gauss") #Check on your side if indeed h has to be defined like this source:http://chronux.org/chronuxFiles/Documentation/chronux/locfit/m/locfit.html
     time <- Sys.time()-time
     my_data <- data.frame(X_eval, Y_eval)
     names(my_data)[1] <- "X"
     names(my_data)[2] <- "Y_noisy"
     preds <- predict(lf, newdata=my_data, se.fit=TRUE)$fit
-    error <- error + sum(abs(Y_eval - preds))
+    error <- sum((Y_eval - preds)^2)#/length(X_eval)  WARNING NEED LENGTH(X_EVAL) CONSTANT
   }
   
   return(c(time,error))
@@ -97,65 +90,48 @@ err_time_comput <- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, m
 
 ```
 
-```{r}
+```{r filling dataframe}
 i=1
 set.seed(1)
 for (d in degrees){
   for (h in h_){
     for (n in Samples_sizes){
       X <- 0:n/(n/5)                      #To go from 0 to 5
-      X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter                                        much!
-      Y <- dmixnorm(X,mu1 = 4, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7)            #Simply change de the function for the one wanted
-      Y_eval <- dmixnorm(X_eval,mu1 = 4, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7)
-      Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
-      t_e_locpol <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval)
+      X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter much!
+      Y <- dmixnorm(X, mu1 = 1, mu2 = 3, sigma1 = 1, sigma2 = 0.5, tau = 0.7)            #Simply change de the function for the one wanted
+      Y_eval <- dmixnorm(X_eval, mu1 = 1, mu2 = 3, sigma1 = 1, sigma2 = 0.5, tau = 0.7)
+      Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/20)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
+    
+      t_e_locpol <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = "locpol")
       df_results[i,c(2:4,7:8)] <- c(d,h,n,t_e_locpol[1],t_e_locpol[2])
       df_results[i,5:6] <- c("locpol","dmixnorm")
       i<-i+1
+      
+      t_e_locpoly <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = "locpoly")
+      df_results[i,c(2:4,7:8)] <- c(d,h,n,t_e_locpoly[1],t_e_locpoly[2])
+      df_results[i,5:6] <- c("locpoly","dmixnorm")
+      i<-i+1
+      
+      t_e_locfit <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = "locfit")
+      df_results[i,c(2:4,7:8)] <- c(d,h,n,t_e_locfit[1],t_e_locfit[2])
+      df_results[i,5:6] <- c("locfit","dmixnorm")
+      i<-i+1
+      
     }
   }
 }
 ```
 
 
+```{r saving df}
+save(df_results,file="df_results.Rda")
+```
 
 
-```{r Time comparison}
-t <- c(0,0,0)
-i <- 1
-for (n in df_results$Samples_sizes){
-  set.seed(1)
-  X <- 0:n/(n/5)                      #To go from 0 to 5
-  X_eval = 0:N_xeval/(N_xeval/5)            #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter                                        much!
-  Y <- dmixnorm(X,mu1 = 4)            #Simply change de the function for the one wanted
-  Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
-  
-  t[1] <- Sys.time()
-  y_locpol <- locpol(Y_noisy~X,data.frame(X,Y_noisy),bw = h,deg = d,kernel = gaussK,xeval = X_eval)  #xeval has to be < 5000....
-  t[1] <- Sys.time()-t[1]
-  
-  t[2] <- Sys.time()
-  y_locpoly <- locpoly(X,Y_noisy, bandwidth=h, degree=d,gridsize = N_xeval) 
-  t[2] <- Sys.time()-t[2]
-  
-  t[3] <- Sys.time()
-  y_locfit <- locfit(X~lp(Y_noisy,h=h/2,deg=d),data.frame(X,Y_noisy), kern = 'gauss') #TODO: check if bandwidth has indeed to be treated like that
-  t[3] <- Sys.time()-t[3]
-  
-  #t[4] <- Sys.time()  
-  #y_ksmooth <- ksmooth(X,Y_noisy, bandwidth=h, kernel = "normal",X) #NO DEGREE
-  #t[4] <- Sys.time() - t[4]
-  
-  df_results[i,-1] <- t
-  print(i)
-  i <- i+1
-  
-}
-```
-```{r}
-#Plotting locpol 
-#lines(y_locpol[["lpFit"]][["X"]],y_locpol[["lpFit"]][["Y_noisy"]],col = "red")
-```
+
+
+
+
 
 
 

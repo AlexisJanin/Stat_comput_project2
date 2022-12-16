@@ -200,11 +200,29 @@ for (k in 1:K){
   errorkern <- errorkern + cverror
 }
 errorkern/K
+```
 
-y_locpoly <- locpoly(x = mcycle$times,y = mcycle$accel, bandwidth=h, degree=2,gridsize = N_sub)
 
-plot(mcycle$times,mcycle$accel,col = "red")
+```{r}
+n <- 50
+h = 0.2
+X <- 0:n/(n/5)                      #To go from 0 to 5
+X_eval = 0:n/(n/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter                                        much!
+Y <- log_sin(X,a=3)            #Simply change de the function for the one wanted
+Y_eval <- log_sin(X_eval,a=3)
+Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
+my_data <- data.frame(X_eval, Y_eval)
+names(my_data)[1] <- "X"
+names(my_data)[2] <- "Y_noisy"
+
+y_locpoly <- locpoly(x = X,y = Y_noisy, bandwidth=h, degree=1,gridsize = n)
+
+lf <- locfit(Y_noisy~lp(X,h=2*h/5,deg=1), data=my_data,kern = "gauss")  #it seems like since h is the halfradius,
+preds <- predict(lf, newdata=my_data, se.fit=TRUE)$fit
+
+plot(X,Y_noisy,col = "red")
 lines(y_locpoly)
+lines(X,preds,col = "blue")
 ```
 
 
