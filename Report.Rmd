@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r include = FALSE}
@@ -11,19 +13,37 @@ knitr::opts_chunk$set(echo = FALSE)
 load("df_results.Rda")
 ```
 
-#Introduction
+# Introduction
+
+The approximation of noisy function is a very important domain that allows one to extract a interpretable behavior from noisy data. However there a huge number of different way to proceed to do so. One that is powerful and flexible is the local polynomial regression. It has the advantages of local method, allowing for various regimes across the range of data considered, but also the power of the polynomial fitting, which allows various behavior, from linear to quadratic to even higher degrees. \
+But as often a good method has various parameters that need to be choose carefully and possibly some drawbacks. In this case, the bandwidth choice is very important, that can go from a too global behavior (which might look like underfitting) to a very narrow one (looking like overfitting). Associated with the bandwidth, the kernel choice is also something that has to be chosen, even if overall less important ( _source_ ). Last parameters is the degree, which will allows to have more complicated regression than the basic local one, which is globally linear. Moreover, this method can have drawbacks such as overfitting, for example if the bandwidth is small and the the degree is high. It is then required to use cross-validation of some kind of penalization to avoid it. These are theoric considerations, and even after the best parameters selection, that can sometimes be found for particular problems, it then needs to be implemented in a computer to be of practical use and indeed help one to predict the behavior of the noisy function that is wanted. Therefore a lot of people did implement these methods in various coding languages, such as $R$, under various libraries names and functions. But to optimize to computation time, accuracy, and practicals reasons, the methods of computation and regression can change from one to another of these methods. One could then wonder how different are these methods, especially in term of results, both in accuracy and time computation, since for big data set this could be a very important aspect. THe difference in output could be observed in many ways, from the basic accuracy and computation time, to the consistency of the methods and the sensitivity to diverse smoothness conditions. To try to answer to this question, this paper will process with a simulation study, which consist of selection various basic functions, with some added noise, and then perform the polynomial regression of different packages and compare the output.
+
+
+# Method
+
+## Global pipeline
+
+Very formally, the problem can be described of the following function that need to be approximated for the different packages: $$ f(h,d,N,g,n,K) \rightarrow (t,a)$$ where $h$ is the bandwidth, $d$ is the degree, $N$ the dataset size that need to be approximated, $g$ the function (more or less smooth and regular) that need to be approximated and $n$ the noise of the function $g$, while $K$ stands for the kernel used. The outcome are $t$ the time need for the computation of the package $'f'$, and $a$ his accuracy (that will be simply considered as an $L^2$ norm), described with more details later. \
+This is in practice completely impossible to do, but this helps to clarify what is the goal and which direction this paper does explore or not.
 
 ## Packages considered
 
-For this local regression packages comparison, we had to find as mcu hpackages as possible about it.
+For this local regression packages comparison, we had to find as many packages as possible about it.
 We found __locpol__ function from __locpol__ package, __locfit__ from __locfit__ ( _need to check the behaviour of h_ ) and __locpoly__ from __KernSmooth__. We found other packages such as lpridge(lpepa), stats(loess/lowess), lokern(lokerns) but they missed some important features in order to be well compared with everything. As example lpepa stands for lp_epachnenikov and then is not using gaussian kernel; loess has no bandwidth argument but rather a span one which has a totally different way of working.
 
 ## Parameters considered
 
-We first wanted to compare the methods for the same bandwidth and kernel (gaussian) to see if indeed the results were the same, without regards of smoothness of the function. \
+We first wanted to compare the methods for the same bandwidth and kernel (gaussian) to see how close where the results, for a rather smooth function. \
 We then looked for consistency of each methods, looking if indeed the error was decreasing to zero with an increasing number of point, depending on the noise induced.
 
 ## Functions/space(interval) considered
+
+
+
+
+
+
+
 
 
 
