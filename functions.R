@@ -27,14 +27,14 @@ weiertrass <- function(x, a=0.9, b=9){
   return(y)
 }
 
-dmixnorm <- function(x, mu1 = 0, mu2 = 2, sigma1 = 1, sigma2 = 3, tau = 0.7){   
+dmixnorm <- function(x, mu1 = 1, mu2 = 3, sigma1 = 1, sigma2 = 0.5, tau = 0.7){   
   #Argument are self explanatory : tau*N(mu1,sigma1)+(1-tau)*N(mu2,sigma2)
   #Rather very smooth function
   y <- tau*dnorm(x,mu1,sigma1) + (1-tau)*dnorm(x,mu2,sigma2)
   return(y)
 }
 
-log_sin <- function(x,a = 5, b = 1.05){  
+log_sin <- function(x,a = 2.5, b = 1.05){  
   #Not smooth at all  the smaller a is, the smoother it is
   #b HAS to be bigger than 1, to have the log of something always positive.
   #Lower b and higher a means less smooth function
