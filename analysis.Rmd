@@ -1,0 +1,90 @@
+---
+title: "analysis"
+output: html_document
+date: "2022-12-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r loading df}
+load(file='df_results_weiertrass.rda')
+```
+
+```{r, echo=FALSE}
+# Bandwidth
+library(ggplot2)
+par(mfrow=c(1,5))
+df_results2 <- df_results[df_results$Number_of_input_points ==4000, ]
+
+df_results3 <- df_results2[df_results2$Degree ==1, ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following bandwidth, deg=1')
+
+df_results3 <- df_results2[df_results2$Degree ==2, ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24))+ geom_path()+ ggtitle('Error of the algorithms following bandwidth, deg=2')
+
+df_results3 <- df_results2[df_results2$Degree ==3, ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24))+ geom_path()+ ggtitle('Error of the algorithms following bandwidth, deg=3')
+
+df_results3 <- df_results2[df_results2$Degree ==4, ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24))+ geom_path()+ ggtitle('Error of the algorithms following bandwidth, deg=4')
+
+df_results3 <- df_results2[df_results2$Degree ==5, ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24))+ geom_path()+ ggtitle('Error of the algorithms following bandwidth, deg=5')
+```
+
+
+```{r, echo=FALSE}
+# Time
+library(ggplot2)
+par(mfrow=c(1,5))
+df_results2 <- df_results[df_results$Bandwidth==0.5, ]
+
+df_results3 <- df_results2[df_results2$Number_of_input_points ==100, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Time, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Time of the algorithms following bandwidth, data=100')
+
+df_results3 <- df_results2[df_results2$Number_of_input_points ==1000, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Time, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Time of the algorithms following bandwidth, data=1000')
+
+df_results3 <- df_results2[df_results2$Number_of_input_points ==4000, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Time, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Time of the algorithms following bandwidth, data=4000')
+
+```
+```{r, echo=FALSE}
+# Degree
+library(ggplot2)
+par(mfrow=c(1,5))
+df_results2 <- df_results[df_results$Number_of_input_points ==4000, ]
+
+df_results3 <- df_results2[df_results2$Bandwidth==0.3, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following deg, bandwith=0.3')
+
+df_results3 <- df_results2[df_results2$Bandwidth==0.6, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following deg, bandwith=0.6')
+
+df_results3 <- df_results2[df_results2$Bandwidth==0.9, ]
+ggplot(data=df_results3, mapping=aes(x=Degree, y=Error, shape=Method, fill=Method)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following deg, bandwith=0.9')
+
+```
+```{r, echo=FALSE}
+# Convergence
+library(ggplot2)
+par(mfrow=c(1,5))
+df_results2 <- df_results[df_results$Deg==2, ]
+df_results2$Number_of_input_points <- as.factor(df_results2$Number_of_input_points)
+
+df_results3 <- df_results2[df_results2$Method=='locfit', ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Number_of_input_points, fill=Number_of_input_points)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following samplesize, method=locfit')
+
+df_results3 <- df_results2[df_results2$Method=='locpol', ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Number_of_input_points, fill=Number_of_input_points)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following samplesize, method=locpol')
+
+df_results3 <- df_results2[df_results2$Method=='locpoly', ]
+ggplot(data=df_results3, mapping=aes(x=Bandwidth, y=Error, shape=Number_of_input_points, fill=Number_of_input_points)) + geom_point(size=2) + scale_fill_manual(values=c('cyan', 'red', 'green'))+scale_shape_manual(values=c(21, 22,24)) + geom_path() + ggtitle('Error of the algorithms following samplesize, method=locpoly')
+
+
+
+
+```
