@@ -1758,161 +1758,18 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShNQVNTKVxubGlicmFyeShsb2Nwb2wpXG5saWJyYXJ5KGZ1bmN0Q2x1c3QpXG5saWJyYXJ5KGxwcmlkZ2UpXG5saWJyYXJ5KGxva2VybilcbmxpYnJhcnkoS2VyblNtb290aClcbmxpYnJhcnkobG9jZml0KVxubGlicmFyeShzdGF0cylcbnNvdXJjZShcImZ1bmN0aW9ucy5SXCIpXG5gYGAifQ== -->
-<pre class="r"><code>library(MASS)
-library(locpol)
-library(functClust)
-library(lpridge)
-library(lokern)
-library(KernSmooth)
-library(locfit)
-library(stats)
-source(&quot;functions.R&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW50ZXJwb2wgPC0gZnVuY3Rpb24odGltZV9pbix0aW1lX3ByZWQsYWNjZWxfcHJlZCx5KXsgICNJIGRvbid0IHVuZGVyc3RhbmQgaG93IHRvIGNvbXB1dGUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGUgZnVuY3Rpb24gbSh4KVxubCA9IGxlbmd0aCh0aW1lX2luKSAgXG5hY2MgPSAxOmxcbmFjY2VsX2RpZmYgPSAxOmxcbiAgZm9yIChpIGluIDE6bCl7XG4gIGFjY1tpXSA9IHdoaWNoLm1pbihhYnModGltZV9wcmVkLXRpbWVfaW5baV0pKVxuICBhY2NlbF9kaWZmW2ldID0gYWJzKGFjY2VsX3ByZWRbYWNjW2ldXS15W2ldKS9sXG4gIH1cbnJldHVybihzdW0oYWNjZWxfZGlmZikpXG59XG5gYGAifQ== -->
-<pre class="r"><code>interpol &lt;- function(time_in,time_pred,accel_pred,y){  #I don&#39;t understand how to compute                                                                  the function m(x)
-l = length(time_in)  
-acc = 1:l
-accel_diff = 1:l
-  for (i in 1:l){
-  acc[i] = which.min(abs(time_pred-time_in[i]))
-  accel_diff[i] = abs(accel_pred[acc[i]]-y[i])/l
-  }
-return(sum(accel_diff))
-}</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSyA8LSAxMCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI051bWJlciBvZiBmb2xkcyAtIHVzZWxlc3MgYXRtXG5kZWdyZWVzIDwtIDE6NTsgbGVuX2QgPC0gbGVuZ3RoKGRlZ3JlZXMpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI0RlZ3JlZShzKVxuaF8gPC0gKDEuNTo1LjUpLzEwOyBsZW5faCA8LSBsZW5ndGgoaF8pICAgICAgICAgICAgICAgICAgICAgICAgICAgICNCYW5kd2lkdGgocylcbk5feGV2YWwgPC0gMTAwMCAgICAgICAgICAgICAgICAgICAgICAgICAgICNTaXplcyBvZiBzYW1wbGVcblxuU2FtcGxlc19zaXplcyA8LSBjKDEwMCw1MDAsMTAwMCwyNTAwLDQ1MDApOyBzIDwtIGxlbmd0aChTYW1wbGVzX3NpemVzKSAjbGVuZ3RoKHhldmFsKSA8IDUwMDAgaW4gbG9jcG9sIHRoYXQncyB3aHkgMyBoZXJlIGF0bVxuXG5uX21ldGhvZCA9IDNcbm5fdHJpYWxzID0gMSAjbmIgb2YgZGlmZmVyZW50IHRyaWFscyB0byByZWNvcmRcbm5fdHJpYWxzX2luID0gNSAgI05iIG9mIGRpZmZlcmVudCB0cmlhbHMgYnV0IGluc2lkZSwgYW5kIHRoZW4gbWVhbiB0YWtlblxubmJfZnVuY3Rpb25zID0gMVxuXG5ucm93ID0gcypuX21ldGhvZCpuX3RyaWFscypsZW5faCpsZW5fZCpuYl9mdW5jdGlvbnNcbmRmX3Jlc3VsdHMgPC0gZGF0YS5mcmFtZShtYXRyaXgobnJvdyA9IG5yb3csbmNvbCA9IDgpKVxuY29sbmFtZXMoZGZfcmVzdWx0cykgPC0gYyhcIkluZGljZVwiLFwiRGVncmVlXCIsXCJCYW5kd2lkdGhcIixcIk51bWJlcl9vZl9pbnB1dF9wb2ludHNcIixcIk1ldGhvZFwiLFwiRnVuY3Rpb25cIixcIlRpbWVcIixcIkVycm9yXCIpICNEYXRhZnJhbWUgdG8gZmlsbFxuZGZfcmVzdWx0cyRJbmRpY2UgPC0gMTpucm93XG5cbiNpbmQgPC0gbWF0cml4KHNhbXBsZSgxOk4pLG5jb2w9SykgICAjUGlwZWxpbmUgZm9yIGRpdmlkaW5nIHRoZSBzYW1wbGVcbmBgYCJ9 -->
-<pre class="r"><code>K &lt;- 10                             #Number of folds - useless atm
-degrees &lt;- 1:5; len_d &lt;- length(degrees)                              #Degree(s)
-h_ &lt;- (1.5:5.5)/10; len_h &lt;- length(h_)                            #Bandwidth(s)
-N_xeval &lt;- 1000                           #Sizes of sample
-
-Samples_sizes &lt;- c(100,500,1000,2500,4500); s &lt;- length(Samples_sizes) #length(xeval) &lt; 5000 in locpol that&#39;s why 3 here atm
-
-n_method = 3
-n_trials = 1 #nb of different trials to record
-n_trials_in = 5  #Nb of different trials but inside, and then mean taken
-nb_functions = 1
-
-nrow = s*n_method*n_trials*len_h*len_d*nb_functions
-df_results &lt;- data.frame(matrix(nrow = nrow,ncol = 8))
-colnames(df_results) &lt;- c(&quot;Indice&quot;,&quot;Degree&quot;,&quot;Bandwidth&quot;,&quot;Number_of_input_points&quot;,&quot;Method&quot;,&quot;Function&quot;,&quot;Time&quot;,&quot;Error&quot;) #Dataframe to fill
-df_results$Indice &lt;- 1:nrow
-
-#ind &lt;- matrix(sample(1:N),ncol=K)   #Pipeline for dividing the sample</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXJyX3RpbWVfY29tcHV0IDwtIGZ1bmN0aW9uKGRlZ3JlZSA9IDEsIGJhbmR3aWR0aCA9IDEsWCxZX25vaXN5LFhfZXZhbCxZX2V2YWwsIG1ldGhvZCA9IFwibG9jcG9sXCIsIGZjdCA9IE5hTil7XG4gICNEZWdyZWUoPTEpLCBiYW5kd2lkdGgoPTEpIChhdXRvbWF0aWNhbGx5IG1vZGlmaWVkIGZvciBtZXRob2QgZGlmZmVyZW50IHRoYW4gbG9jcG9sKSBzZWxmIGV4cGxpY2l0XG4gICNYLCBZX25vaXN5IHRoZSBwb2ludCB1c2VkIHRvIGFwcHJveGltYXRlXG4gICNYX2V2YWwsIFlfZXZhbCB3aGVyZSB3ZSB3YW50IHRvIGNvbXBhcmUgdGhlIHJlc3VsdHNcbiAgI21ldGhvZCg9XCJsb2Nwb2xcIik6IHN0ciBhcmd1bWVudCBmb3IgdGhlIG1ldGhvZCB1c2VkLiBJbXBsZW1lbnRlZDogXCJsb2Nwb2xcIjtcImxvY3BvbHlcIixcImxvY2ZpdFwiXG4gICNmY3QoPU5hTik6IG5vdCB1c2VkIGF0bVxuICB0aW1lID0gMFxuICBlcnJvciA9IDBcbiAgaWYgKG1ldGhvZD09XCJsb2Nwb2xcIil7XG4gICAgICBkZiA8LSBkYXRhLmZyYW1lKFgsWV9ub2lzeSkgI3ByZWFsbG9jYXRlIHRvIGF2b2lkIGxvb3NpbmcgYW55IHRpbWUgZG9pbmcgdGhpcyBpbiB0aGUgZnVuY3Rpb25cbiAgICAgIHRpbWUgPC0gU3lzLnRpbWUoKVxuICAgICAgeV9sb2Nwb2wgPC0gbG9jcG9sKFlfbm9pc3l+WCxkZixidyA9IGJhbmR3aWR0aCxkZWcgPSBkZWdyZWUsa2VybmVsID0gZ2F1c3NLLHhldmFsID0gWF9ldmFsKSBcbiAgICAgIHRpbWUgPC0gU3lzLnRpbWUoKS10aW1lXG4gICAgICBcbiAgICAgIGVycm9yIDwtIHN1bSgoWV9ldmFsLXlfbG9jcG9sJGxwRml0JFlfbm9pc3kpXjIpIy9sZW5ndGgoWF9ldmFsKSBXQVJOSU5HIE5FRUQgTEVOR1RIKFhfRVZBTCkgQ09OU1RBTlRcbiAgICAgICNlcnJvciA8LSBpbnRlcnBvbCh0aW1lX2luID0gWF9ldmFsLHkgPSBZX2V2YWwsYWNjZWxfcHJlZCA9IHlfbG9jcG9sJGxwRml0JFlfbm9pc3ksdGltZV9wcmVkID0geV9sb2Nwb2wkbHBGaXQkWClcbiAgfVxuICBpZiAobWV0aG9kPT1cImxvY3BvbHlcIil7XG4gICAgdGltZSA8LSBTeXMudGltZSgpXG4gICAgbHAgPC0gbG9jcG9seSh4ID0gWCwgeSA9IFlfbm9pc3ksIGJhbmR3aWR0aD1iYW5kd2lkdGgsIGRlZ3JlZT1kZWdyZWUsIGdyaWRzaXplID0gbGVuZ3RoKFhfZXZhbCkpXG4gICAgdGltZSA8LSBTeXMudGltZSgpLXRpbWVcbiAgICBlcnJvciA8LSBzdW0oKGxwJHktWV9ldmFsKV4yKSMvbGVuZ3RoKFhfZXZhbCkgV0FSTklORyBORUVEIExFTkdUSChYX0VWQUwpIENPTlNUQU5UXG4gIH1cbiAgaWYgKG1ldGhvZD09XCJsb2NmaXRcIil7XG4gICAgZGYgPC0gZGF0YS5mcmFtZShYLFlfbm9pc3kpICNwcmVhbGxvY2F0ZSB0byBhdm9pZCBsb29zaW5nIGFueSB0aW1lIGRvaW5nIHRoaXMgaW4gdGhlIGZ1bmN0aW9uXG4gICAgdGltZSA8LSBTeXMudGltZSgpXG4gICAgbGYgPC0gbG9jZml0KFlfbm9pc3l+bHAoWCxoPWJhbmR3aWR0aCoyLzUsIGRlZz1kZWdyZWUpLCBkZiwga2VybiA9IFwiZ2F1c3NcIikgI0NoZWNrIG9uIHlvdXIgc2lkZSBpZiBpbmRlZWQgaCBoYXMgdG8gYmUgZGVmaW5lZCBsaWtlIHRoaXMgc291cmNlOmh0dHA6Ly9jaHJvbnV4Lm9yZy9jaHJvbnV4RmlsZXMvRG9jdW1lbnRhdGlvbi9jaHJvbnV4L2xvY2ZpdC9tL2xvY2ZpdC5odG1sXG4gICAgdGltZSA8LSBTeXMudGltZSgpLXRpbWVcbiAgICBteV9kYXRhIDwtIGRhdGEuZnJhbWUoWF9ldmFsLCBZX2V2YWwpXG4gICAgbmFtZXMobXlfZGF0YSlbMV0gPC0gXCJYXCJcbiAgICBuYW1lcyhteV9kYXRhKVsyXSA8LSBcIllfbm9pc3lcIlxuICAgIHByZWRzIDwtIHByZWRpY3QobGYsIG5ld2RhdGE9bXlfZGF0YSwgc2UuZml0PVRSVUUpJGZpdFxuICAgIGVycm9yIDwtIHN1bSgoWV9ldmFsIC0gcHJlZHMpXjIpIy9sZW5ndGgoWF9ldmFsKSAgV0FSTklORyBORUVEIExFTkdUSChYX0VWQUwpIENPTlNUQU5UXG4gIH1cbiAgXG4gIHJldHVybihjKHRpbWUsZXJyb3IpKVxufVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>err_time_comput &lt;- function(degree = 1, bandwidth = 1,X,Y_noisy,X_eval,Y_eval, method = &quot;locpol&quot;, fct = NaN){
-  #Degree(=1), bandwidth(=1) (automatically modified for method different than locpol) self explicit
-  #X, Y_noisy the point used to approximate
-  #X_eval, Y_eval where we want to compare the results
-  #method(=&quot;locpol&quot;): str argument for the method used. Implemented: &quot;locpol&quot;;&quot;locpoly&quot;,&quot;locfit&quot;
-  #fct(=NaN): not used atm
-  time = 0
-  error = 0
-  if (method==&quot;locpol&quot;){
-      df &lt;- data.frame(X,Y_noisy) #preallocate to avoid loosing any time doing this in the function
-      time &lt;- Sys.time()
-      y_locpol &lt;- locpol(Y_noisy~X,df,bw = bandwidth,deg = degree,kernel = gaussK,xeval = X_eval) 
-      time &lt;- Sys.time()-time
-      
-      error &lt;- sum((Y_eval-y_locpol$lpFit$Y_noisy)^2)#/length(X_eval) WARNING NEED LENGTH(X_EVAL) CONSTANT
-      #error &lt;- interpol(time_in = X_eval,y = Y_eval,accel_pred = y_locpol$lpFit$Y_noisy,time_pred = y_locpol$lpFit$X)
-  }
-  if (method==&quot;locpoly&quot;){
-    time &lt;- Sys.time()
-    lp &lt;- locpoly(x = X, y = Y_noisy, bandwidth=bandwidth, degree=degree, gridsize = length(X_eval))
-    time &lt;- Sys.time()-time
-    error &lt;- sum((lp$y-Y_eval)^2)#/length(X_eval) WARNING NEED LENGTH(X_EVAL) CONSTANT
-  }
-  if (method==&quot;locfit&quot;){
-    df &lt;- data.frame(X,Y_noisy) #preallocate to avoid loosing any time doing this in the function
-    time &lt;- Sys.time()
-    lf &lt;- locfit(Y_noisy~lp(X,h=bandwidth*2/5, deg=degree), df, kern = &quot;gauss&quot;) #Check on your side if indeed h has to be defined like this source:http://chronux.org/chronuxFiles/Documentation/chronux/locfit/m/locfit.html
-    time &lt;- Sys.time()-time
-    my_data &lt;- data.frame(X_eval, Y_eval)
-    names(my_data)[1] &lt;- &quot;X&quot;
-    names(my_data)[2] &lt;- &quot;Y_noisy&quot;
-    preds &lt;- predict(lf, newdata=my_data, se.fit=TRUE)$fit
-    error &lt;- sum((Y_eval - preds)^2)#/length(X_eval)  WARNING NEED LENGTH(X_EVAL) CONSTANT
-  }
-  
-  return(c(time,error))
-}
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2V0d2QoKVxuXG5gYGAifQ== -->
+<pre class="r"><code>getwd()
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaT0xXG5zZXQuc2VlZCgxKVxuZm9yIChkIGluIGRlZ3JlZXMpe1xuICBmb3IgKGggaW4gaF8pe1xuICAgIGZvciAobiBpbiBTYW1wbGVzX3NpemVzKXtcbiAgICAgIHJlbV9wb2wgPSByZXAoMCw1KVxuICAgICAgcmVtX3BvbHkgPSByZXAoMCw1KVxuICAgICAgcmVtX2ZpdCA9IHJlcCgwLDUpXG4gICAgICBmb3IgKHEgaW4gMTpuX3RyaWFsc19pbil7XG4gICAgICAgIFggPC0gMDpuLyhuLzUpICAgICAgICAgICAgICAgICAgICAgICNUbyBnbyBmcm9tIDAgdG8gNVxuICAgICAgICBYX2V2YWwgPSAwOk5feGV2YWwvKE5feGV2YWwvNSkgICAgICAjWF9ldmFsLCB3ZSBhY2NvcmRlZCBvbiAxMDAgb3IgMTAwMCBvciA1MDAwIHBvaW50czsgc2hvdWxkbid0IG1hdHRlciBtdWNoIVxuICAgICAgICBZIDwtIGRtaXhub3JtKFgsIG11MSA9IDEsIG11MiA9IDMsIHNpZ21hMSA9IDEsIHNpZ21hMiA9IDAuNSwgdGF1ID0gMC43KSAgICAgICAgICAgICNTaW1wbHkgY2hhbmdlIGRlIHRoZSBmdW5jdGlvbiBmb3IgdGhlIG9uZSB3YW50ZWRcbiAgICAgICAgWV9ldmFsIDwtIGRtaXhub3JtKFhfZXZhbCwgbXUxID0gMSwgbXUyID0gMywgc2lnbWExID0gMSwgc2lnbWEyID0gMC41LCB0YXUgPSAwLjcpXG4gICAgICAgIFlfbm9pc3kgPC0gTm9pc2VfaW5kdWN0aW9uKFksc2lnX2dhdXNzID0gYWJzKG1heChZKS1taW4oWSkpLzIwKSAgI1ZhcmlhbmNlIG9mIGdhdXNzaWFuIG5vaXNlIGxpbmVhcmx5IGNvcnJlbGF0ZWQgd2l0aCBUVih0b3RhbCB2YXJpYXRpb24gb2YgYSBmdW5jdGlvbikgc28gdGhlIG5vaXNlIGlzIG5vdCB0b28gbG93IG9yIHRvbyBiaWdcbiAgICAgIFxuICAgICAgICB0X2VfbG9jcG9sIDwtIGVycl90aW1lX2NvbXB1dChkZWdyZWUgPSBkLCBiYW5kd2lkdGggPSBoLCBYID0gWCwgWV9ub2lzeSA9IFlfbm9pc3ksIFhfZXZhbCA9IFhfZXZhbCwgWV9ldmFsID0gWV9ldmFsLCBtZXRob2QgPSBcImxvY3BvbFwiKVxuICAgICAgICByZW1fcG9sIDwtIHJlbV9wb2wgKyBjKGQsaCxuLHRfZV9sb2Nwb2xbMV0sdF9lX2xvY3BvbFsyXSlcbiAgICAgICAgXG4gICAgICAgIHRfZV9sb2Nwb2x5IDwtIGVycl90aW1lX2NvbXB1dChkZWdyZWUgPSBkLCBiYW5kd2lkdGggPSBoLCBYID0gWCwgWV9ub2lzeSA9IFlfbm9pc3ksIFhfZXZhbCA9IFhfZXZhbCwgWV9ldmFsID0gWV9ldmFsLCBtZXRob2QgPSBcImxvY3BvbHlcIilcbiAgICAgICAgcmVtX3BvbHkgPC0gcmVtX3BvbHkgKyBjKGQsaCxuLHRfZV9sb2Nwb2x5WzFdLHRfZV9sb2Nwb2x5WzJdKVxuICAgICAgICBcbiAgICAgICAgdF9lX2xvY2ZpdCA8LSBlcnJfdGltZV9jb21wdXQoZGVncmVlID0gZCwgYmFuZHdpZHRoID0gaCwgWCA9IFgsIFlfbm9pc3kgPSBZX25vaXN5LCBYX2V2YWwgPSBYX2V2YWwsIFlfZXZhbCA9IFlfZXZhbCwgbWV0aG9kID0gXCJsb2NmaXRcIilcbiAgICAgICAgcmVtX2ZpdCA8LSByZW1fZml0ICsgYyhkLGgsbix0X2VfbG9jZml0WzFdLHRfZV9sb2NmaXRbMl0pXG4gICAgICB9XG4gICAgICByZW1fcG9sID0gcmVtX3BvbC9uX3RyaWFsc19pblxuICAgICAgZGZfcmVzdWx0c1tpLGMoMjo0LDc6OCldIDwtIHJlbV9wb2xcbiAgICAgIGRmX3Jlc3VsdHNbaSw1OjZdIDwtIGMoXCJsb2Nwb2xcIixcImRtaXhub3JtXCIpXG4gICAgICBpPC1pKzFcbiAgICAgIHJlbXBfcG9seSA9IHJlbV9wb2x5L25fdHJpYWxzX2luXG4gICAgICBkZl9yZXN1bHRzW2ksYygyOjQsNzo4KV0gPC0gcmVtX3BvbHlcbiAgICAgIGRmX3Jlc3VsdHNbaSw1OjZdIDwtIGMoXCJsb2Nwb2x5XCIsXCJkbWl4bm9ybVwiKVxuICAgICAgaTwtaSsxXG4gICAgICByZW1fZml0ID0gcmVtX2ZpdC9uX3RyaWFsc19pblxuICAgICAgZGZfcmVzdWx0c1tpLGMoMjo0LDc6OCldIDwtIHJlbV9maXRcbiAgICAgIGRmX3Jlc3VsdHNbaSw1OjZdIDwtIGMoXCJsb2NmaXRcIixcImRtaXhub3JtXCIpXG4gICAgICBpPC1pKzFcbiAgICB9XG4gIH1cbn1cbmBgYCJ9 -->
-<pre class="r"><code>i=1
-set.seed(1)
-for (d in degrees){
-  for (h in h_){
-    for (n in Samples_sizes){
-      rem_pol = rep(0,5)
-      rem_poly = rep(0,5)
-      rem_fit = rep(0,5)
-      for (q in 1:n_trials_in){
-        X &lt;- 0:n/(n/5)                      #To go from 0 to 5
-        X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn&#39;t matter much!
-        Y &lt;- dmixnorm(X, mu1 = 1, mu2 = 3, sigma1 = 1, sigma2 = 0.5, tau = 0.7)            #Simply change de the function for the one wanted
-        Y_eval &lt;- dmixnorm(X_eval, mu1 = 1, mu2 = 3, sigma1 = 1, sigma2 = 0.5, tau = 0.7)
-        Y_noisy &lt;- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/20)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
-      
-        t_e_locpol &lt;- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = &quot;locpol&quot;)
-        rem_pol &lt;- rem_pol + c(d,h,n,t_e_locpol[1],t_e_locpol[2])
-        
-        t_e_locpoly &lt;- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = &quot;locpoly&quot;)
-        rem_poly &lt;- rem_poly + c(d,h,n,t_e_locpoly[1],t_e_locpoly[2])
-        
-        t_e_locfit &lt;- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = &quot;locfit&quot;)
-        rem_fit &lt;- rem_fit + c(d,h,n,t_e_locfit[1],t_e_locfit[2])
-      }
-      rem_pol = rem_pol/n_trials_in
-      df_results[i,c(2:4,7:8)] &lt;- rem_pol
-      df_results[i,5:6] &lt;- c(&quot;locpol&quot;,&quot;dmixnorm&quot;)
-      i&lt;-i+1
-      remp_poly = rem_poly/n_trials_in
-      df_results[i,c(2:4,7:8)] &lt;- rem_poly
-      df_results[i,5:6] &lt;- c(&quot;locpoly&quot;,&quot;dmixnorm&quot;)
-      i&lt;-i+1
-      rem_fit = rem_fit/n_trials_in
-      df_results[i,c(2:4,7:8)] &lt;- rem_fit
-      df_results[i,5:6] &lt;- c(&quot;locfit&quot;,&quot;dmixnorm&quot;)
-      i&lt;-i+1
-    }
-  }
-}</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlQXZpcyA6IEVzdGltYXRlZCByZGYgPCAxLjA7IG5vdCBlc3RpbWF0aW5nIHZhcmlhbmNlXG4ifQ== -->
-<pre><code>Avis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating varianceAvis : Estimated rdf &lt; 1.0; not estimating variance</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQzovVXNlcnMvYWxleGkvRVBGTC9NQTMvU3RhdHMgY29tcHV0YXRpb24gYW5kIHZpc3VhbGlzYXRpb24vU3RhdF9jb21wdXRfcHJvamVjdDJcIlxuIn0= -->
+<pre><code>[1] &quot;C:/Users/alexi/EPFL/MA3/Stats computation and visualisation/Stat_comput_project2&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3NhdmUoZGZfcmVzdWx0cyxmaWxlPVwiZGZfcmVzdWx0cy5SZGFcIilcbmBgYCJ9 -->
-<pre class="r"><code>#save(df_results,file=&quot;df_results.Rda&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7ciBwYWNrYWdlc30NCmxpYnJhcnkoTUFTUykNCmxpYnJhcnkobG9jcG9sKQ0KbGlicmFyeShmdW5jdENsdXN0KQ0KbGlicmFyeShscHJpZGdlKQ0KbGlicmFyeShsb2tlcm4pDQpsaWJyYXJ5KEtlcm5TbW9vdGgpDQpsaWJyYXJ5KGxvY2ZpdCkNCmxpYnJhcnkoc3RhdHMpDQpzb3VyY2UoImZ1bmN0aW9ucy5SIikNCmBgYA0KDQpgYGB7ciBzdXBwb3J0IGZ1bmN0aW9uc30NCmludGVycG9sIDwtIGZ1bmN0aW9uKHRpbWVfaW4sdGltZV9wcmVkLGFjY2VsX3ByZWQseSl7ICAjSSBkb24ndCB1bmRlcnN0YW5kIGhvdyB0byBjb21wdXRlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGhlIGZ1bmN0aW9uIG0oeCkNCmwgPSBsZW5ndGgodGltZV9pbikgIA0KYWNjID0gMTpsDQphY2NlbF9kaWZmID0gMTpsDQogIGZvciAoaSBpbiAxOmwpew0KICBhY2NbaV0gPSB3aGljaC5taW4oYWJzKHRpbWVfcHJlZC10aW1lX2luW2ldKSkNCiAgYWNjZWxfZGlmZltpXSA9IGFicyhhY2NlbF9wcmVkW2FjY1tpXV0teVtpXSkvbA0KICB9DQpyZXR1cm4oc3VtKGFjY2VsX2RpZmYpKQ0KfQ0KYGBgDQoNCmBgYHtyIHBhcmFtZXRlcnMgdGhhdCB3ZSBjYW4gY29tcGFyZX0NCksgPC0gMTAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICNOdW1iZXIgb2YgZm9sZHMgLSB1c2VsZXNzIGF0bQ0KZGVncmVlcyA8LSAxOjU7IGxlbl9kIDwtIGxlbmd0aChkZWdyZWVzKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICNEZWdyZWUocykNCmhfIDwtICgxLjU6NS41KS8xMDsgbGVuX2ggPC0gbGVuZ3RoKGhfKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAjQmFuZHdpZHRoKHMpDQpOX3hldmFsIDwtIDEwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAjU2l6ZXMgb2Ygc2FtcGxlDQoNClNhbXBsZXNfc2l6ZXMgPC0gYygxMDAsNTAwLDEwMDAsMjUwMCw0NTAwKTsgcyA8LSBsZW5ndGgoU2FtcGxlc19zaXplcykgI2xlbmd0aCh4ZXZhbCkgPCA1MDAwIGluIGxvY3BvbCB0aGF0J3Mgd2h5IDMgaGVyZSBhdG0NCg0Kbl9tZXRob2QgPSAzDQpuX3RyaWFscyA9IDEgI25iIG9mIGRpZmZlcmVudCB0cmlhbHMgdG8gcmVjb3JkDQpuX3RyaWFsc19pbiA9IDUgICNOYiBvZiBkaWZmZXJlbnQgdHJpYWxzIGJ1dCBpbnNpZGUsIGFuZCB0aGVuIG1lYW4gdGFrZW4NCm5iX2Z1bmN0aW9ucyA9IDENCg0KbnJvdyA9IHMqbl9tZXRob2Qqbl90cmlhbHMqbGVuX2gqbGVuX2QqbmJfZnVuY3Rpb25zDQpkZl9yZXN1bHRzIDwtIGRhdGEuZnJhbWUobWF0cml4KG5yb3cgPSBucm93LG5jb2wgPSA4KSkNCmNvbG5hbWVzKGRmX3Jlc3VsdHMpIDwtIGMoIkluZGljZSIsIkRlZ3JlZSIsIkJhbmR3aWR0aCIsIk51bWJlcl9vZl9pbnB1dF9wb2ludHMiLCJNZXRob2QiLCJGdW5jdGlvbiIsIlRpbWUiLCJFcnJvciIpICNEYXRhZnJhbWUgdG8gZmlsbA0KZGZfcmVzdWx0cyRJbmRpY2UgPC0gMTpucm93DQoNCiNpbmQgPC0gbWF0cml4KHNhbXBsZSgxOk4pLG5jb2w9SykgICAjUGlwZWxpbmUgZm9yIGRpdmlkaW5nIHRoZSBzYW1wbGUNCmBgYA0KDQpgYGB7ciBNQUlOIGZ1bmN0aW9ufQ0KZXJyX3RpbWVfY29tcHV0IDwtIGZ1bmN0aW9uKGRlZ3JlZSA9IDEsIGJhbmR3aWR0aCA9IDEsWCxZX25vaXN5LFhfZXZhbCxZX2V2YWwsIG1ldGhvZCA9ICJsb2Nwb2wiLCBmY3QgPSBOYU4pew0KICAjRGVncmVlKD0xKSwgYmFuZHdpZHRoKD0xKSAoYXV0b21hdGljYWxseSBtb2RpZmllZCBmb3IgbWV0aG9kIGRpZmZlcmVudCB0aGFuIGxvY3BvbCkgc2VsZiBleHBsaWNpdA0KICAjWCwgWV9ub2lzeSB0aGUgcG9pbnQgdXNlZCB0byBhcHByb3hpbWF0ZQ0KICAjWF9ldmFsLCBZX2V2YWwgd2hlcmUgd2Ugd2FudCB0byBjb21wYXJlIHRoZSByZXN1bHRzDQogICNtZXRob2QoPSJsb2Nwb2wiKTogc3RyIGFyZ3VtZW50IGZvciB0aGUgbWV0aG9kIHVzZWQuIEltcGxlbWVudGVkOiAibG9jcG9sIjsibG9jcG9seSIsImxvY2ZpdCINCiAgI2ZjdCg9TmFOKTogbm90IHVzZWQgYXRtDQogIHRpbWUgPSAwDQogIGVycm9yID0gMA0KICBpZiAobWV0aG9kPT0ibG9jcG9sIil7DQogICAgICBkZiA8LSBkYXRhLmZyYW1lKFgsWV9ub2lzeSkgI3ByZWFsbG9jYXRlIHRvIGF2b2lkIGxvb3NpbmcgYW55IHRpbWUgZG9pbmcgdGhpcyBpbiB0aGUgZnVuY3Rpb24NCiAgICAgIHRpbWUgPC0gU3lzLnRpbWUoKQ0KICAgICAgeV9sb2Nwb2wgPC0gbG9jcG9sKFlfbm9pc3l+WCxkZixidyA9IGJhbmR3aWR0aCxkZWcgPSBkZWdyZWUsa2VybmVsID0gZ2F1c3NLLHhldmFsID0gWF9ldmFsKSANCiAgICAgIHRpbWUgPC0gU3lzLnRpbWUoKS10aW1lDQogICAgICANCiAgICAgIGVycm9yIDwtIHN1bSgoWV9ldmFsLXlfbG9jcG9sJGxwRml0JFlfbm9pc3kpXjIpIy9sZW5ndGgoWF9ldmFsKSBXQVJOSU5HIE5FRUQgTEVOR1RIKFhfRVZBTCkgQ09OU1RBTlQNCiAgICAgICNlcnJvciA8LSBpbnRlcnBvbCh0aW1lX2luID0gWF9ldmFsLHkgPSBZX2V2YWwsYWNjZWxfcHJlZCA9IHlfbG9jcG9sJGxwRml0JFlfbm9pc3ksdGltZV9wcmVkID0geV9sb2Nwb2wkbHBGaXQkWCkNCiAgfQ0KICBpZiAobWV0aG9kPT0ibG9jcG9seSIpew0KICAgIHRpbWUgPC0gU3lzLnRpbWUoKQ0KICAgIGxwIDwtIGxvY3BvbHkoeCA9IFgsIHkgPSBZX25vaXN5LCBiYW5kd2lkdGg9YmFuZHdpZHRoLCBkZWdyZWU9ZGVncmVlLCBncmlkc2l6ZSA9IGxlbmd0aChYX2V2YWwpKQ0KICAgIHRpbWUgPC0gU3lzLnRpbWUoKS10aW1lDQogICAgZXJyb3IgPC0gc3VtKChscCR5LVlfZXZhbCleMikjL2xlbmd0aChYX2V2YWwpIFdBUk5JTkcgTkVFRCBMRU5HVEgoWF9FVkFMKSBDT05TVEFOVA0KICB9DQogIGlmIChtZXRob2Q9PSJsb2NmaXQiKXsNCiAgICBkZiA8LSBkYXRhLmZyYW1lKFgsWV9ub2lzeSkgI3ByZWFsbG9jYXRlIHRvIGF2b2lkIGxvb3NpbmcgYW55IHRpbWUgZG9pbmcgdGhpcyBpbiB0aGUgZnVuY3Rpb24NCiAgICB0aW1lIDwtIFN5cy50aW1lKCkNCiAgICBsZiA8LSBsb2NmaXQoWV9ub2lzeX5scChYLGg9YmFuZHdpZHRoKjIvNSwgZGVnPWRlZ3JlZSksIGRmLCBrZXJuID0gImdhdXNzIikgI0NoZWNrIG9uIHlvdXIgc2lkZSBpZiBpbmRlZWQgaCBoYXMgdG8gYmUgZGVmaW5lZCBsaWtlIHRoaXMgc291cmNlOmh0dHA6Ly9jaHJvbnV4Lm9yZy9jaHJvbnV4RmlsZXMvRG9jdW1lbnRhdGlvbi9jaHJvbnV4L2xvY2ZpdC9tL2xvY2ZpdC5odG1sDQogICAgdGltZSA8LSBTeXMudGltZSgpLXRpbWUNCiAgICBteV9kYXRhIDwtIGRhdGEuZnJhbWUoWF9ldmFsLCBZX2V2YWwpDQogICAgbmFtZXMobXlfZGF0YSlbMV0gPC0gIlgiDQogICAgbmFtZXMobXlfZGF0YSlbMl0gPC0gIllfbm9pc3kiDQogICAgcHJlZHMgPC0gcHJlZGljdChsZiwgbmV3ZGF0YT1teV9kYXRhLCBzZS5maXQ9VFJVRSkkZml0DQogICAgZXJyb3IgPC0gc3VtKChZX2V2YWwgLSBwcmVkcyleMikjL2xlbmd0aChYX2V2YWwpICBXQVJOSU5HIE5FRUQgTEVOR1RIKFhfRVZBTCkgQ09OU1RBTlQNCiAgfQ0KICANCiAgcmV0dXJuKGModGltZSxlcnJvcikpDQp9DQoNCg0KYGBgDQoNCmBgYHtyIGZpbGxpbmcgZGF0YWZyYW1lfQ0KaT0xDQpzZXQuc2VlZCgxKQ0KZm9yIChkIGluIGRlZ3JlZXMpew0KICBmb3IgKGggaW4gaF8pew0KICAgIGZvciAobiBpbiBTYW1wbGVzX3NpemVzKXsNCiAgICAgIHJlbV9wb2wgPSByZXAoMCw1KQ0KICAgICAgcmVtX3BvbHkgPSByZXAoMCw1KQ0KICAgICAgcmVtX2ZpdCA9IHJlcCgwLDUpDQogICAgICBmb3IgKHEgaW4gMTpuX3RyaWFsc19pbil7DQogICAgICAgIFggPC0gMDpuLyhuLzUpICAgICAgICAgICAgICAgICAgICAgICNUbyBnbyBmcm9tIDAgdG8gNQ0KICAgICAgICBYX2V2YWwgPSAwOk5feGV2YWwvKE5feGV2YWwvNSkgICAgICAjWF9ldmFsLCB3ZSBhY2NvcmRlZCBvbiAxMDAgb3IgMTAwMCBvciA1MDAwIHBvaW50czsgc2hvdWxkbid0IG1hdHRlciBtdWNoIQ0KICAgICAgICBZIDwtIGRtaXhub3JtKFgsIG11MSA9IDEsIG11MiA9IDMsIHNpZ21hMSA9IDEsIHNpZ21hMiA9IDAuNSwgdGF1ID0gMC43KSAgICAgICAgICAgICNTaW1wbHkgY2hhbmdlIGRlIHRoZSBmdW5jdGlvbiBmb3IgdGhlIG9uZSB3YW50ZWQNCiAgICAgICAgWV9ldmFsIDwtIGRtaXhub3JtKFhfZXZhbCwgbXUxID0gMSwgbXUyID0gMywgc2lnbWExID0gMSwgc2lnbWEyID0gMC41LCB0YXUgPSAwLjcpDQogICAgICAgIFlfbm9pc3kgPC0gTm9pc2VfaW5kdWN0aW9uKFksc2lnX2dhdXNzID0gYWJzKG1heChZKS1taW4oWSkpLzIwKSAgI1ZhcmlhbmNlIG9mIGdhdXNzaWFuIG5vaXNlIGxpbmVhcmx5IGNvcnJlbGF0ZWQgd2l0aCBUVih0b3RhbCB2YXJpYXRpb24gb2YgYSBmdW5jdGlvbikgc28gdGhlIG5vaXNlIGlzIG5vdCB0b28gbG93IG9yIHRvbyBiaWcNCiAgICAgIA0KICAgICAgICB0X2VfbG9jcG9sIDwtIGVycl90aW1lX2NvbXB1dChkZWdyZWUgPSBkLCBiYW5kd2lkdGggPSBoLCBYID0gWCwgWV9ub2lzeSA9IFlfbm9pc3ksIFhfZXZhbCA9IFhfZXZhbCwgWV9ldmFsID0gWV9ldmFsLCBtZXRob2QgPSAibG9jcG9sIikNCiAgICAgICAgcmVtX3BvbCA8LSByZW1fcG9sICsgYyhkLGgsbix0X2VfbG9jcG9sWzFdLHRfZV9sb2Nwb2xbMl0pDQogICAgICAgIA0KICAgICAgICB0X2VfbG9jcG9seSA8LSBlcnJfdGltZV9jb21wdXQoZGVncmVlID0gZCwgYmFuZHdpZHRoID0gaCwgWCA9IFgsIFlfbm9pc3kgPSBZX25vaXN5LCBYX2V2YWwgPSBYX2V2YWwsIFlfZXZhbCA9IFlfZXZhbCwgbWV0aG9kID0gImxvY3BvbHkiKQ0KICAgICAgICByZW1fcG9seSA8LSByZW1fcG9seSArIGMoZCxoLG4sdF9lX2xvY3BvbHlbMV0sdF9lX2xvY3BvbHlbMl0pDQogICAgICAgIA0KICAgICAgICB0X2VfbG9jZml0IDwtIGVycl90aW1lX2NvbXB1dChkZWdyZWUgPSBkLCBiYW5kd2lkdGggPSBoLCBYID0gWCwgWV9ub2lzeSA9IFlfbm9pc3ksIFhfZXZhbCA9IFhfZXZhbCwgWV9ldmFsID0gWV9ldmFsLCBtZXRob2QgPSAibG9jZml0IikNCiAgICAgICAgcmVtX2ZpdCA8LSByZW1fZml0ICsgYyhkLGgsbix0X2VfbG9jZml0WzFdLHRfZV9sb2NmaXRbMl0pDQogICAgICB9DQogICAgICByZW1fcG9sID0gcmVtX3BvbC9uX3RyaWFsc19pbg0KICAgICAgZGZfcmVzdWx0c1tpLGMoMjo0LDc6OCldIDwtIHJlbV9wb2wNCiAgICAgIGRmX3Jlc3VsdHNbaSw1OjZdIDwtIGMoImxvY3BvbCIsImRtaXhub3JtIikNCiAgICAgIGk8LWkrMQ0KICAgICAgcmVtcF9wb2x5ID0gcmVtX3BvbHkvbl90cmlhbHNfaW4NCiAgICAgIGRmX3Jlc3VsdHNbaSxjKDI6NCw3OjgpXSA8LSByZW1fcG9seQ0KICAgICAgZGZfcmVzdWx0c1tpLDU6Nl0gPC0gYygibG9jcG9seSIsImRtaXhub3JtIikNCiAgICAgIGk8LWkrMQ0KICAgICAgcmVtX2ZpdCA9IHJlbV9maXQvbl90cmlhbHNfaW4NCiAgICAgIGRmX3Jlc3VsdHNbaSxjKDI6NCw3OjgpXSA8LSByZW1fZml0DQogICAgICBkZl9yZXN1bHRzW2ksNTo2XSA8LSBjKCJsb2NmaXQiLCJkbWl4bm9ybSIpDQogICAgICBpPC1pKzENCiAgICB9DQogIH0NCn0NCmBgYA0KDQoNCmBgYHtyIHNhdmluZyBkZn0NCiNzYXZlKGRmX3Jlc3VsdHMsZmlsZT0iZGZfcmVzdWx0cy5SZGEiKQ0KYGBgDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KbG9hZChmaWxlPSdkZl9yZXN1bHRzLlJkYScpDQpgYGANCg0K</div>
 
 
 
@@ -1959,7 +1816,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("Main_pipeline.Rmd");
+  window.initializeSourceEmbed("test_plot_alexis.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
