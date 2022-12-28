@@ -8,9 +8,20 @@ date: "2022-12-27"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+source("functions.R")
+
+X = 0:5000/1000
+plot(X,log_sin(X),col = 'red',type = 'l')
+plot(X,dmixnorm(X),col = 'blue',type ='l',ylim = c(-1,2))
+lines(X,log_sq(X,0.5,5),col = 'green')
+
+```
+
+
 
 ```{r loading df}
-load(file='df_results_dmixnorm.rda')
+load(file='df_results_log_sq.rda')
 ```
 
 ```{r, echo=FALSE}

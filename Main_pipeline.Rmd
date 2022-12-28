@@ -103,8 +103,8 @@ for (d in degrees){
       for (q in 1:n_trials_in){
         X <- 0:n/(n/5)                      #To go from 0 to 5
         X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter much!
-        Y <- dmixnorm(X)            #Simply change de the function for the one wanted
-        Y_eval <- dmixnorm(X_eval)
+        Y <- log_sq(X)            #Simply change de the function for the one wanted
+        Y_eval <- log_sq(X_eval)
         Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
       
         t_e_locpol <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = "locpol")
@@ -135,7 +135,7 @@ for (d in degrees){
 
 
 ```{r saving df}
-save(df_results,file="df_results_dmixnorm.Rda")
+save(df_results,file="df_results_log_sq.Rda")
 ```
 
 
