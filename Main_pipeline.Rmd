@@ -37,11 +37,10 @@ N_xeval <- 1000                           #Sizes of sample
 Samples_sizes <- c(50,100,500,1000,4500); s <- length(Samples_sizes) #length(xeval) < 5000 in locpol that's why 3 here atm
 
 n_method = 3
-n_trials = 1 #nb of different trials to record
-n_trials_in = 1  #Nb of different trials but inside, and then mean taken
+n_trials_in = 6  #Nb of different trials but inside, and then mean taken
 nb_functions = 1
 
-nrow = s*n_method*n_trials*len_h*len_d*nb_functions
+nrow = s*n_method*len_h*len_d*nb_functions
 df_results <- data.frame(matrix(nrow = nrow,ncol = 8))
 colnames(df_results) <- c("Indice","Degree","Bandwidth","Number_of_input_points","Method","Function","Time","Error") #Dataframe to fill
 df_results$Indice <- 1:nrow
@@ -103,8 +102,8 @@ for (d in degrees){
       for (q in 1:n_trials_in){
         X <- 0:n/(n/5)                      #To go from 0 to 5
         X_eval = 0:N_xeval/(N_xeval/5)      #X_eval, we accorded on 100 or 1000 or 5000 points; shouldn't matter much!
-        Y <- log_sq(X)            #Simply change de the function for the one wanted
-        Y_eval <- log_sq(X_eval)
+        Y <- dmixnorm(X)            #Simply change de the function for the one wanted
+        Y_eval <- dmixnorm(X_eval)
         Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)  #Variance of gaussian noise linearly correlated with TV(total variation of a function) so the noise is not too low or too big
       
         t_e_locpol <- err_time_comput(degree = d, bandwidth = h, X = X, Y_noisy = Y_noisy, X_eval = X_eval, Y_eval = Y_eval, method = "locpol")
@@ -118,15 +117,15 @@ for (d in degrees){
       }
       rem_pol = rem_pol/n_trials_in
       df_results[i,c(2:4,7:8)] <- c(c(d,h,n),rem_pol)
-      df_results[i,5:6] <- c("locpol","dmixnorm")
+      df_results[i,5:6] <- c("locpol","dmixnorm")  #Need to change this according to the function used
       i<-i+1
       remp_poly = rem_poly/n_trials_in
       df_results[i,c(2:4,7:8)] <- c(c(d,h,n),rem_poly)
-      df_results[i,5:6] <- c("locpoly","dmixnorm")
+      df_results[i,5:6] <- c("locpoly","dmixnorm")  #Need to change this according to the function used
       i<-i+1
       rem_fit = rem_fit/n_trials_in
       df_results[i,c(2:4,7:8)] <- c(c(d,h,n),rem_fit)
-      df_results[i,5:6] <- c("locfit","dmixnorm")
+      df_results[i,5:6] <- c("locfit","dmixnorm")   #Need to change this according to the function used
       i<-i+1
     }
   }
@@ -135,7 +134,7 @@ for (d in degrees){
 
 
 ```{r saving df}
-save(df_results,file="df_results_log_sq.Rda")
+save(df_results,file="df_results_dmixnorm.Rda")   #Change the name to save it in the right file
 ```
 
 
