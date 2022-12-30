@@ -38,7 +38,7 @@ Samples_sizes <- c(50,100,500,1000,4500); s <- length(Samples_sizes) #length(xev
 
 n_method = 3
 n_trials = 1 #nb of different trials to record
-n_trials_in = 6  #Nb of different trials but inside, and then mean taken
+n_trials_in = 1  #Nb of different trials but inside, and then mean taken
 nb_functions = 1
 
 nrow = s*n_method*n_trials*len_h*len_d*nb_functions

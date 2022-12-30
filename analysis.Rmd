@@ -12,9 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 source("functions.R")
 
 X = 0:5000/1000
-plot(X,log_sin(X),col = 'red',type = 'l')
-plot(X,dmixnorm(X),col = 'blue',type ='l',ylim = c(-1,2))
-lines(X,log_sq(X,0.5,5),col = 'green')
+x = 0:500/100
+Y <- log_sq(X)            #Simply change de the function for the one wanted
+Y_eval <- log_sq(X_eval)
+Y_noisy <- Noise_induction(Y,sig_gauss = abs(max(Y)-min(Y))/10)
+plot(X,dmixnorm(X),col = 'blue',type ='l',ylim = c(-0.5,0.7),xlab = "X",ylab = "Y")
+lines(x,weiertrass(x)/10,col=alpha(rgb(0,0,0), 0.3))
+lines(X,log_sq(X),col = 'green')
+lines(X,log_sin(X)/7,col = 'red')
+legend("bottomleft", legend=c("f1", "f2", "f3/7", "f4/10"),
+       col=c("blue", "green", 'red',"grey"), lty=1, cex=0.8)
+#plot(X,Y_noisy)
 
 ```
 
