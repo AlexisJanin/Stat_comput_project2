@@ -29,7 +29,6 @@ return(sum(accel_diff))
 ```
 
 ```{r parameters that we can compare}
-K <- 10                             #Number of folds - useless atm
 degrees <- 1:7; len_d <- length(degrees)                              #Degree(s)
 h_ <- (1.5:5.5)/10; len_h <- length(h_)                            #Bandwidth(s)
 N_xeval <- 1000                           #Sizes of sample
@@ -38,9 +37,8 @@ Samples_sizes <- c(50,100,500,1000,4500); s <- length(Samples_sizes) #length(xev
 
 n_method = 3
 n_trials_in = 6  #Nb of different trials but inside, and then mean taken
-nb_functions = 1
 
-nrow = s*n_method*len_h*len_d*nb_functions
+nrow = s*n_method*len_h*len_d
 df_results <- data.frame(matrix(nrow = nrow,ncol = 8))
 colnames(df_results) <- c("Indice","Degree","Bandwidth","Number_of_input_points","Method","Function","Time","Error") #Dataframe to fill
 df_results$Indice <- 1:nrow
